@@ -1,7 +1,7 @@
 // content/signup-page.js — Content script for OpenAI auth pages (steps 2, 3, 4-receive, 5)
 // Injected on: auth0.openai.com, auth.openai.com, accounts.openai.com
 
-console.log('[MultiPage:signup-page] Content script loaded on', location.href);
+console.log('[EXtZerzor:signup-page] Content script loaded on', location.href);
 
 // Listen for commands from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -187,7 +187,7 @@ async function step2_clickRegister() {
 // Step 3: Fill Email & Password
 // ============================================================
 
-const PASSWORD_RETRY_ATTEMPTS_KEY = '__multipage_password_retry_attempts';
+const PASSWORD_RETRY_ATTEMPTS_KEY = '__EXtZerzor_password_retry_attempts';
 
 function isCreateAccountPasswordPage() {
   return /\/create-account\/password/i.test(location.pathname)

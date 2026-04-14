@@ -2,7 +2,7 @@
 
 importScripts('data/names.js');
 
-const LOG_PREFIX = '[MultiPage:bg]';
+const LOG_PREFIX = '[EXtZerzor:bg]';
 const STOP_ERROR_MESSAGE = 'Flow stopped by user.';
 const HUMAN_STEP_DELAY_MIN = 250;
 const HUMAN_STEP_DELAY_MAX = 900;

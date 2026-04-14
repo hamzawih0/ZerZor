@@ -9,7 +9,7 @@ const SCRIPT_SOURCE = (() => {
   return 'vps-panel';
 })();
 
-const LOG_PREFIX = `[MultiPage:${SCRIPT_SOURCE}]`;
+const LOG_PREFIX = `[extzarzoor:${SCRIPT_SOURCE}]`;
 const STOP_ERROR_MESSAGE = 'Flow stopped by user.';
 const HUMAN_PAUSE_SCALE = 0.6;
 let flowStopped = false;

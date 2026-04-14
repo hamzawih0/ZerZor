@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXtZerzor 文档页</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070808;
+      --bg-soft: #111313;
+      --panel: rgba(18, 20, 20, 0.9);
+      --panel-2: rgba(25, 27, 27, 0.92);
+      --border: rgba(236, 230, 214, 0.12);
+      --border-strong: rgba(120, 255, 172, 0.26);
+      --text: #ece6d8;
+      --text-soft: rgba(232, 225, 210, 0.76);
+      --text-muted: rgba(170, 165, 154, 0.58);
+      --green: #78ffac;
+      --green-soft: rgba(120, 255, 172, 0.1);
+      --amber: #d3a66c;
+      --amber-soft: rgba(211, 166, 108, 0.12);
+      --red: #c47d88;
+      --shadow: 0 28px 60px -34px rgba(0, 0, 0, 0.82);
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(120, 255, 172, 0.07), transparent 24%),
+        linear-gradient(180deg, #0b0d0d 0%, #050505 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.035) 0,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      width: min(1100px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .hero,
+    .section,
+    .notice {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-lg);
+    }
+
+    .hero {
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 22px;
+      align-items: center;
+    }
+
+    .hero img {
+      width: 132px;
+      height: 132px;
+      object-fit: cover;
+      border-radius: 28px;
+      border: 1px solid var(--border-strong);
+      background: #0c100d;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(120, 255, 172, 0.2);
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      margin-top: 14px;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--text-soft);
+      max-width: 760px;
+    }
+
+    .hero-links {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .pill-link.primary {
+      border-color: rgba(120, 255, 172, 0.22);
+      background: rgba(120, 255, 172, 0.08);
+      color: var(--green);
+    }
+
+    .stack {
+      margin-top: 18px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .notice {
+      padding: 18px 20px;
+      border-color: rgba(211, 166, 108, 0.24);
+      background: linear-gradient(180deg, rgba(211, 166, 108, 0.08), rgba(18, 20, 20, 0.94));
+    }
+
+    .notice strong {
+      color: #ffd39b;
+    }
+
+    .section {
+      padding: 22px;
+    }
+
+    .section-title {
+      font-size: 1.45rem;
+    }
+
+    .section-subtitle {
+      margin-top: 8px;
+      color: var(--text-soft);
+    }
+
+    .grid-2,
+    .grid-3 {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+    }
+
+    .card p,
+    .card li {
+      color: var(--text-soft);
+    }
+
+    .card ul,
+    .steps ol {
+      margin: 10px 0 0;
+      padding-left: 20px;
+    }
+
+    .steps li + li {
+      margin-top: 10px;
+    }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .shot {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(29, 31, 31, 0.96), rgba(13, 14, 14, 0.98));
+      padding: 16px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .shot-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(211, 166, 108, 0.24);
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .shot-window {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid rgba(120, 255, 172, 0.12);
+      border-radius: 20px;
+      background: rgba(18, 20, 20, 0.92);
+    }
+
+    .shot-line {
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .shot-line + .shot-line {
+      margin-top: 10px;
+    }
+
+    .shot-line.short {
+      width: 48%;
+    }
+
+    .shot-line.mid {
+      width: 72%;
+    }
+
+    .shot-input {
+      margin-top: 12px;
+      height: 52px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .shot-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .shot-btn {
+      height: 58px;
+      border-radius: 20px;
+      background: rgba(120, 255, 172, 0.12);
+      border: 1px solid rgba(120, 255, 172, 0.18);
+    }
+
+    .shot-btn.stop {
+      background: rgba(184, 115, 127, 0.14);
+      border-color: rgba(184, 115, 127, 0.22);
+    }
+
+    .provider-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .provider-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag.good {
+      color: var(--green);
+      border-color: rgba(120, 255, 172, 0.22);
+      background: rgba(120, 255, 172, 0.08);
+    }
+
+    .tag.warn {
+      color: var(--amber);
+      border-color: rgba(211, 166, 108, 0.22);
+      background: rgba(211, 166, 108, 0.08);
+    }
+
+    .footer-note {
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 920px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2,
+      .grid-3,
+      .shot-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <img src="./icons/newlogo.png" alt="extzarzoor logo">
+      <div>
+        <div class="eyebrow">extzarzoor docs</div>
+        <h1>小白也能看懂的运行说明页</h1>
+        <p>
+          这个页面是给不会配环境的人看的。你只要照着下面一步一步做，就能把
+          <strong>OAuth 配置</strong>、<strong>验证源配置</strong>、<strong>邮箱来源</strong>
+          这些东西填好，然后把工具跑起来。
+        </p>
+        <div class="hero-links">
+          <a class="pill-link primary" href="./README.md">打开 README</a>
+          <a class="pill-link" href="chrome://extensions/">打开扩展管理页</a>
+          <a class="pill-link" href="./sidepanel/sidepanel.html" target="_blank" rel="noopener noreferrer">打开工具页面</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="stack">
+      <section class="notice">
+        <strong>先看结论：</strong>
+        想跑成功，你最少要准备 3 样东西：
+        `OAuth 来源`、`Microsoft Account Manager`、`MAIL_API_TOKEN`。
+        没有这 3 个，点播放大概率直接失败。
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">一眼看懂：先做什么</h2>
+        <p class="section-subtitle">如果你完全不懂，先按这个顺序来，不要跳步。</p>
+        <div class="card steps">
+          <ol>
+            <li>先在浏览器里加载扩展：`chrome://extensions/` → 开启开发者模式 → 加载当前项目。</li>
+            <li>准备好一个能收验证码邮件的邮箱来源，最好是你自己控制的邮箱或邮箱 API。</li>
+            <li>准备好一个可用的 `Microsoft Account Manager` 服务地址。</li>
+            <li>拿到这个服务对应的 `MAIL_API_TOKEN`。</li>
+            <li>打开工具页面，先填 `OAuth 配置`，再填 `验证源配置`。</li>
+            <li>次数先填 `1`，第一次不要多跑。</li>
+            <li>点播放按钮，观察运行窗口里的工作流和日志。</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">截图示意</h2>
+        <p class="section-subtitle">下面不是乱画的装饰，是按这个工具当前结构做的示意图，照着找就行。</p>
+        <div class="shot-grid">
+          <article class="shot">
+            <div class="shot-badge">截图 1</div>
+            <div class="shot-window">
+              <div class="shot-line short"></div>
+              <div class="shot-line mid"></div>
+              <div class="shot-input"></div>
+              <div class="shot-input"></div>
+            </div>
+            <p>这里对应 <strong>OAuth 配置</strong>。先选 `CPA Auth` 或 `Sub2API`，再把地址填进去。</p>
+          </article>
+
+          <article class="shot">
+            <div class="shot-badge">截图 2</div>
+            <div class="shot-window">
+              <div class="shot-line short"></div>
+              <div class="shot-line"></div>
+              <div class="shot-input"></div>
+              <div class="shot-input"></div>
+              <div class="shot-input"></div>
+            </div>
+            <p>这里对应 <strong>验证源配置</strong>。重点是 `MSMgr`、`Token`、`Mode` 这 3 个。</p>
+          </article>
+
+          <article class="shot">
+            <div class="shot-badge">截图 3</div>
+            <div class="shot-window">
+              <div class="shot-actions">
+                <div class="shot-btn"></div>
+                <div class="shot-btn stop"></div>
+              </div>
+              <div class="shot-input"></div>
+              <div class="shot-line"></div>
+              <div class="shot-line mid"></div>
+            </div>
+            <p>这里对应 <strong>播放后弹出的运行窗口</strong>。里面能看工作流、日志，也能点停止。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">每一块到底填什么</h2>
+        <div class="grid-2">
+          <article class="card">
+            <h3>1. OAuth 配置</h3>
+            <ul>
+              <li>`CPA Auth`：填管理页地址，比如 `http://你的地址/management.html#/oauth`</li>
+              <li>`CPA Key`：如果你有明文管理 Key，就填；没有可以先不填</li>
+              <li>`Sub2API`：只填根地址，比如 `https://你的域名`</li>
+              <li>`API Key`：后端开鉴权才填，没开先留空</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>2. 验证源配置</h3>
+            <ul>
+              <li>`MSMgr`：你的 Microsoft Account Manager 地址</li>
+              <li>`Token`：就是 `MAIL_API_TOKEN`</li>
+              <li>`Mode`：一般选 `graph` 或 `imap`，要和服务端一致</li>
+              <li>`Filter`：不懂就先留空</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>3. 账号输入</h3>
+            <ul>
+              <li>`Email`：可以点 `Auto` 自动取号，也可以自己粘贴</li>
+              <li>`Password`：留空就自动生成，自己有固定密码就手填</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>4. 开始运行</h3>
+            <ul>
+              <li>次数先填 `1`</li>
+              <li>第一次不要开很多次</li>
+              <li>点播放后看日志，不要乱点其它设置</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">可用的收码 / 邮件平台</h2>
+        <p class="section-subtitle">
+          下面这些是<strong>官方或正规文档</strong>，适合你自己控制邮箱时收验证码邮件。
+          当前这个工具面板最终还是要填 `MSMgr + Token`，
+          所以这些平台更适合你自己做收码管道、转发层、或者兼容到你自己的 manager 服务。
+          不建议用来做来路不明的临时号、租号、滥用注册。
+        </p>
+
+        <div class="grid-2">
+          <article class="card provider-card">
+            <h3>Microsoft Graph / Outlook</h3>
+            <div class="provider-meta">
+              <span class="tag good">官方</span>
+              <span class="tag">适合 Outlook / Hotmail</span>
+            </div>
+            <p>如果你的验证码邮件走 Microsoft 邮箱，这是最正统的方案。</p>
+            <a href="https://learn.microsoft.com/en-us/graph/tutorials/go-email" target="_blank" rel="noopener noreferrer">
+              打开官方教程
+            </a>
+          </article>
+
+          <article class="card provider-card">
+            <h3>Gmail API</h3>
+            <div class="provider-meta">
+              <span class="tag good">官方</span>
+              <span class="tag">适合 Gmail</span>
+            </div>
+            <p>如果你想从 Gmail 里拿邮件验证码，可以看这个官方 quickstart。</p>
+            <a href="https://developers.google.com/gmail/api/quickstart/python" target="_blank" rel="noopener noreferrer">
+              打开 Gmail API Quickstart
+            </a>
+          </article>
+
+          <article class="card provider-card">
+            <h3>MailSlurp</h3>
+            <div class="provider-meta">
+              <span class="tag warn">第三方平台</span>
+              <span class="tag">开发测试常用</span>
+            </div>
+            <p>它是邮箱 API 平台，可以创建收件箱并通过 API 等待邮件到达。</p>
+            <a href="https://docs.mailslurp.com/" target="_blank" rel="noopener noreferrer">
+              打开 MailSlurp 文档
+            </a>
+          </article>
+
+          <article class="card provider-card">
+            <h3>Nylas Email API</h3>
+            <div class="provider-meta">
+              <span class="tag warn">第三方平台</span>
+              <span class="tag">适合做统一收件层</span>
+            </div>
+            <p>如果你想把 Gmail / Outlook 等统一接入到一个邮件 API 层，可以看这个。</p>
+            <a href="https://developer.nylas.com/docs/v3/getting-started/email/" target="_blank" rel="noopener noreferrer">
+              打开 Nylas Email API Quickstart
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">最常见的问题</h2>
+        <div class="grid-3">
+          <article class="card">
+            <h3>一按播放就失败</h3>
+            <p>通常是 `OAuth 配置` 或 `验证源配置` 没填完整。</p>
+          </article>
+          <article class="card">
+            <h3>收不到验证码</h3>
+            <p>先查 `MSMgr` 地址、`MAIL_API_TOKEN`、`Mode`，这三个最常出错。</p>
+          </article>
+          <article class="card">
+            <h3>Auto 取号失败</h3>
+            <p>说明账号池没可用邮箱，或者 `Filter` 把目标账号过滤掉了。</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        这页文档只帮你更快配好工具，不帮你绕过平台规则。请只用你自己控制的邮箱、账号和 API。
+      </div>
+    </div>
+  </div>
+</body>
+</html>

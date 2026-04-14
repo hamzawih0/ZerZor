@@ -32,12 +32,42 @@ const btnTogglePassword = document.getElementById('btn-toggle-password');
 const btnCopyPassword = document.getElementById('btn-copy-password');
 const btnStop = document.getElementById('btn-stop');
 const btnReset = document.getElementById('btn-reset');
+const btnLanguage = document.getElementById('btn-language');
+const displayLanguageToggle = document.getElementById('display-language-toggle');
+const btnAutoRunLabel = document.getElementById('btn-auto-run-label');
 const stepsProgress = document.getElementById('steps-progress');
+const runWindowOverlay = document.getElementById('run-window-overlay');
+const runWindowBackdrop = document.getElementById('run-window-backdrop');
+const btnWindowStop = document.getElementById('btn-window-stop');
+const runWindowStepsProgress = document.getElementById('run-window-steps-progress');
+const runWindowStepsList = document.getElementById('run-window-steps-list');
+const runWindowLogArea = document.getElementById('run-window-log-area');
+const runWindowToastContainer = document.getElementById('run-window-toast-container');
+const quickstartKicker = document.getElementById('quickstart-kicker');
+const quickstartTitle = document.getElementById('quickstart-title');
+const quickstartHint = document.getElementById('quickstart-hint');
+const quickstartOauthState = document.getElementById('quickstart-oauth-state');
+const quickstartOauthNote = document.getElementById('quickstart-oauth-note');
+const quickstartVerifyState = document.getElementById('quickstart-verify-state');
+const quickstartVerifyNote = document.getElementById('quickstart-verify-note');
+const quickstartIdentityState = document.getElementById('quickstart-identity-state');
+const quickstartIdentityNote = document.getElementById('quickstart-identity-note');
+const assistSection = document.getElementById('assist-section');
+const assistKicker = document.getElementById('assist-kicker');
+const assistTitle = document.getElementById('assist-title');
+const assistMessage = document.getElementById('assist-message');
+const btnAssistPrimary = document.getElementById('btn-assist-primary');
+const btnAssistSecondary = document.getElementById('btn-assist-secondary');
+const btnAssistDismiss = document.getElementById('btn-assist-dismiss');
 const btnAutoRun = document.getElementById('btn-auto-run');
 const btnAutoContinue = document.getElementById('btn-auto-continue');
 const autoContinueBar = document.getElementById('auto-continue-bar');
 const btnClearLog = document.getElementById('btn-clear-log');
-const selectLanguage = document.getElementById('select-language');
+const btnExpand = document.getElementById('btn-expand');
+const btnFooterHelp = document.getElementById('btn-footer-help');
+const docsWindowOverlay = document.getElementById('docs-window-overlay');
+const docsWindowBackdrop = document.getElementById('docs-window-backdrop');
+const btnDocsClose = document.getElementById('btn-docs-close');
 const selectOauthProvider = document.getElementById('select-oauth-provider');
 const rowCpaAuthUrl = document.getElementById('row-cpa-auth-url');
 const inputVpsUrl = document.getElementById('input-vps-url');
@@ -48,6 +78,10 @@ const rowSub2apiBaseUrl = document.getElementById('row-sub2api-base-url');
 const inputSub2apiBaseUrl = document.getElementById('input-sub2api-base-url');
 const rowSub2apiApiKey = document.getElementById('row-sub2api-api-key');
 const inputSub2apiApiKey = document.getElementById('input-sub2api-api-key');
+const messageCpaAuthUrl = document.getElementById('message-cpa-auth-url');
+const messageSub2apiBaseUrl = document.getElementById('message-sub2api-base-url');
+const btnTestOauth = document.getElementById('btn-test-oauth');
+const oauthTestResult = document.getElementById('oauth-test-result');
 const selectMailProvider = document.getElementById('select-mail-provider');
 const rowMicrosoftManagerUrl = document.getElementById('row-microsoft-manager-url');
 const inputMicrosoftManagerUrl = document.getElementById('input-microsoft-manager-url');
@@ -59,9 +93,32 @@ const rowMicrosoftManagerKeyword = document.getElementById('row-microsoft-manage
 const inputMicrosoftManagerKeyword = document.getElementById('input-microsoft-manager-keyword');
 const rowMicrosoftManagerAliasToggle = document.getElementById('row-microsoft-manager-alias-toggle');
 const checkboxMicrosoftManagerUseAliases = document.getElementById('checkbox-microsoft-manager-use-aliases');
+const messageMicrosoftManagerUrl = document.getElementById('message-microsoft-manager-url');
+const messageMicrosoftManagerToken = document.getElementById('message-microsoft-manager-token');
+const messageMicrosoftManagerMode = document.getElementById('message-microsoft-manager-mode');
+const btnTestVerify = document.getElementById('btn-test-verify');
+const verifyTestResult = document.getElementById('verify-test-result');
 const inputRunCount = document.getElementById('input-run-count');
 const autoHint = document.getElementById('auto-hint');
-let currentLanguage = localStorage.getItem('multipage-language') || 'zh-CN';
+const fieldHoverCard = document.getElementById('field-hover-card');
+const fieldHoverCardTitle = document.getElementById('field-hover-card-title');
+const fieldHoverCardDescription = document.getElementById('field-hover-card-description');
+const fieldHoverCardReference = document.getElementById('field-hover-card-reference');
+const fieldHoverCardReferenceLabel = document.getElementById('field-hover-card-reference-label');
+const fieldHoverCardLink = document.getElementById('field-hover-card-link');
+const pageParams = new URLSearchParams(window.location.search);
+const isStandaloneView = pageParams.get('view') === 'standalone';
+const LANGUAGE_STORAGE_KEY = 'extzarzoor-language';
+const LEGACY_LANGUAGE_STORAGE_KEY = 'zarzoor-language';
+const LEGACY_LANGUAGE_STORAGE_KEY_2 = 'multipage-language';
+const THEME_STORAGE_KEY = 'extzarzoor-theme';
+const LEGACY_THEME_STORAGE_KEY = 'zarzoor-theme';
+const LEGACY_THEME_STORAGE_KEY_2 = 'multipage-theme';
+const ONBOARDING_DISMISS_KEY = 'extzarzoor-onboarding-dismissed';
+let currentLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY)
+  || localStorage.getItem(LEGACY_LANGUAGE_STORAGE_KEY)
+  || localStorage.getItem(LEGACY_LANGUAGE_STORAGE_KEY_2)
+  || 'zh-CN';
 let lastKnownState = null;
 let runMetricsTicker = null;
 let activeRunStartMs = 0;
@@ -70,15 +127,38 @@ const completedRunDurationsMs = [];
 const finishedRunKeys = new Set();
 const successfulRunKeys = new Set();
 const manifestInfo = chrome.runtime.getManifest();
-const releaseRepo = 'Msg-Lbo/MSRegFlow';
+const releaseRepo = '';
+const hasReleaseRepo = Boolean(releaseRepo);
 const currentManifestVersion = normalizeVersionValue(manifestInfo.version || '0.0.0');
 const currentManifestVersionLabel = formatVersionLabel(currentManifestVersion);
 let latestReleaseVersion = '';
-let latestReleaseUrl = `https://github.com/${releaseRepo}/releases`;
+let latestReleaseUrl = hasReleaseRepo ? `https://github.com/${releaseRepo}/releases` : '';
 let hasNewRelease = false;
 let isVersionCheckFinished = false;
 let versionCheckInFlight = false;
 let hasShownNewReleaseToast = false;
+let runWindowCloseTimer = null;
+let assistBannerMode = 'setup';
+let assistRecoveryMessage = '';
+let fieldHoverCardOpenTimer = null;
+let fieldHoverCardCloseTimer = null;
+let activeFieldHoverKey = '';
+let activeFieldHoverTrigger = null;
+
+document.documentElement.dataset.view = isStandaloneView ? 'standalone' : 'panel';
+
+const settingsGroupState = Object.create(null);
+const settingsGroupRefs = Array.from(document.querySelectorAll('[data-settings-group]')).reduce((acc, groupEl) => {
+  const groupId = groupEl.dataset.settingsGroup;
+  if (!groupId) return acc;
+  acc[groupId] = {
+    element: groupEl,
+    toggle: groupEl.querySelector(`[data-settings-group-toggle="${groupId}"]`),
+    body: groupEl.querySelector(`[data-settings-group-body="${groupId}"]`),
+    status: groupEl.querySelector(`[data-settings-group-status="${groupId}"]`),
+  };
+  return acc;
+}, {});
 
 function normalizeMailProviderValue(rawValue) {
   void rawValue;
@@ -98,8 +178,6 @@ const TOAST_ICONS = {
   info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
 };
 
-const AUTO_BUTTON_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-
 const I18N = {
   'zh-CN': {
     titleRunCount: '运行次数',
@@ -109,9 +187,12 @@ const I18N = {
     titleStop: '停止当前流程',
     titleReset: '重置全部步骤',
     titleTheme: '切换主题',
+    titleExpand: '在新标签页打开全屏视图',
     titleVersionBadge: '点击查看版本更新',
     titleSkipStep: '跳过这一步',
     titleClearLog: '清空日志',
+    brandSubtitle: 'OAuth 自动化工作台',
+    footerTagline: '用于 Microsoft OAuth 自动化的操作台',
     labelCpaAuth: 'CPA Auth',
     labelOauthTarget: 'OAuth',
     labelLanguage: '语言',
@@ -202,6 +283,9 @@ const I18N = {
     versionTooltipUpdateAvailable: ({ current, latest }) => `发现新版本 ${latest}（当前 ${current}），点击查看`,
     versionTooltipCheckFailed: '版本检查失败，点击查看 Releases',
     newVersionFound: ({ latest }) => `发现新版本 ${latest}，点击标题旁版本号查看`,
+    languageToggleLabel: 'EN',
+    languageToggleNextName: 'English',
+    standaloneTitle: '全屏视图',
   },
   'en-US': {
     titleRunCount: 'Number of runs',
@@ -211,9 +295,12 @@ const I18N = {
     titleStop: 'Stop current flow',
     titleReset: 'Reset all steps',
     titleTheme: 'Toggle theme',
+    titleExpand: 'Open full page view',
     titleVersionBadge: 'Click to view version updates',
     titleSkipStep: 'Skip this step',
     titleClearLog: 'Clear log',
+    brandSubtitle: 'OAuth operator workspace',
+    footerTagline: 'Operator workspace for Microsoft OAuth automation',
     labelCpaAuth: 'CPA Auth',
     labelOauthTarget: 'OAuth',
     labelLanguage: 'Language',
@@ -304,6 +391,391 @@ const I18N = {
     versionTooltipUpdateAvailable: ({ current, latest }) => `New version ${latest} available (current ${current}), click to view`,
     versionTooltipCheckFailed: 'Version check failed, click to view releases',
     newVersionFound: ({ latest }) => `New version ${latest} found. Click the header version badge to view`,
+    languageToggleLabel: '中文',
+    languageToggleNextName: 'Chinese',
+    standaloneTitle: 'Full Page',
+  },
+};
+
+const SETTINGS_GROUP_TEXT = {
+  'zh-CN': {
+    groupOauthTitle: 'OAuth 配置',
+    groupOauthDescription: '选择导入目标并填写对应的入口地址。',
+    groupVerifyTitle: '验证源配置',
+    groupVerifyDescription: '连接用于验证码和账号轮换的 Microsoft 管理源。',
+    groupIdentityTitle: '账号输入',
+    groupIdentityDescription: '自动获取或手动填写邮箱，可选覆盖密码。',
+    groupRuntimeTitle: '运行链接',
+    groupRuntimeDescription: '流程开始后在这里查看 OAuth 和回调地址。',
+    groupStatusAttention: '待填写',
+    groupStatusReady: '已就绪',
+    groupStatusManual: '手动',
+    groupStatusWaiting: '等待中',
+  },
+  'en-US': {
+    groupOauthTitle: 'OAuth Setup',
+    groupOauthDescription: 'Choose the import target and fill the required endpoint.',
+    groupVerifyTitle: 'Verification Setup',
+    groupVerifyDescription: 'Connect the Microsoft manager source used for codes and account rotation.',
+    groupIdentityTitle: 'Identity Input',
+    groupIdentityDescription: 'Fetch or paste the email and optionally override the password.',
+    groupRuntimeTitle: 'Runtime Links',
+    groupRuntimeDescription: 'Review the OAuth and callback links after a run starts.',
+    groupStatusAttention: 'Needs Attention',
+    groupStatusReady: 'Ready',
+    groupStatusManual: 'Manual',
+    groupStatusWaiting: 'Waiting',
+  },
+};
+
+const QUICKSTART_TEXT = {
+  'zh-CN': {
+    kicker: '快速开始',
+    title: '先填 2 个地方，再开始',
+    hintMissingOauth: '先完成 OAuth 配置。把来源选好，再填对应地址。',
+    hintMissingVerify: 'OAuth 已经好了。现在去填验证源配置里的 MSMgr、Token、Mode。',
+    hintReady: '基础配置已经好了。建议先把次数设为 1，然后点播放测试一次。',
+    oauthReady: '已完成',
+    oauthPending: '未完成',
+    oauthNoteReady: '来源和地址已经填好',
+    oauthNotePending: '请选择来源并填地址',
+    verifyReady: '已完成',
+    verifyPending: '未完成',
+    verifyNoteReady: '收码配置已经填好',
+    verifyNotePending: '请填 MSMgr、Token、Mode',
+    identityReady: '已填写',
+    identityManual: '可选',
+    identityNoteReady: '邮箱已填，可以直接跑',
+    identityNoteManual: '可点 Auto 自动取号',
+  },
+  'en-US': {
+    kicker: 'Quick Start',
+    title: 'Fill 2 things first, then run',
+    hintMissingOauth: 'Start with OAuth Setup. Choose the provider, then fill the matching address.',
+    hintMissingVerify: 'OAuth is ready. Now fill MS Manager URL, Token, and Mode in Verification Setup.',
+    hintReady: 'Core setup is ready. Set the count to 1 and run a test first.',
+    oauthReady: 'Ready',
+    oauthPending: 'Missing',
+    oauthNoteReady: 'Provider and address are set',
+    oauthNotePending: 'Choose a provider and fill the address',
+    verifyReady: 'Ready',
+    verifyPending: 'Missing',
+    verifyNoteReady: 'Verification source is configured',
+    verifyNotePending: 'Fill MSMgr, Token, and Mode',
+    identityReady: 'Ready',
+    identityManual: 'Optional',
+    identityNoteReady: 'Email is filled and ready',
+    identityNoteManual: 'Use Auto to fetch an account',
+  },
+};
+
+const ASSIST_TEXT = {
+  'zh-CN': {
+    setupKicker: '设置助手',
+    setupTitle: '现在还不能开始',
+    setupMessageOne: '先完成 OAuth 配置，再完成验证源配置。填好以后再点播放，成功率会高很多。',
+    setupMessageTwo: 'OAuth 已经好了。现在请去填验证源配置里的 MSMgr、Token、Mode。',
+    setupPrimaryOauth: '去填 OAuth',
+    setupPrimaryVerify: '去填验证源',
+    setupSecondaryVerify: '再看验证源',
+    setupDismiss: '知道了',
+    onboardingKicker: '第一次使用？',
+    onboardingTitle: '建议先这样跑',
+    onboardingMessage: '先把次数设为 1，先跑通一次。不要一开始就连跑很多次。',
+    onboardingPrimary: '定位到次数',
+    onboardingDismiss: '不再提示',
+    recoveryKicker: '错误恢复',
+    recoveryTitle: '刚刚运行失败了',
+    recoveryMessagePrefix: '先处理这个问题：',
+    recoveryPrimaryOauth: '检查 OAuth',
+    recoveryPrimaryVerify: '检查验证源',
+    recoveryPrimaryIdentity: '检查邮箱',
+    recoveryPrimaryGeneral: '查看设置',
+    recoveryDismiss: '先关掉',
+  },
+  'en-US': {
+    setupKicker: 'Setup Helper',
+    setupTitle: 'You cannot run yet',
+    setupMessageOne: 'Finish OAuth Setup first, then Verification Setup. Running after that will be much safer.',
+    setupMessageTwo: 'OAuth is ready. Now fill MSMgr, Token, and Mode in Verification Setup.',
+    setupPrimaryOauth: 'Open OAuth',
+    setupPrimaryVerify: 'Open Verify',
+    setupSecondaryVerify: 'Then Verify',
+    setupDismiss: 'Got it',
+    onboardingKicker: 'First time?',
+    onboardingTitle: 'Use this safer flow first',
+    onboardingMessage: 'Set the count to 1 and make one successful run before trying bigger batches.',
+    onboardingPrimary: 'Jump to Count',
+    onboardingDismiss: 'Hide Tips',
+    recoveryKicker: 'Recovery',
+    recoveryTitle: 'The last run failed',
+    recoveryMessagePrefix: 'Fix this first:',
+    recoveryPrimaryOauth: 'Check OAuth',
+    recoveryPrimaryVerify: 'Check Verify',
+    recoveryPrimaryIdentity: 'Check Email',
+    recoveryPrimaryGeneral: 'Check Settings',
+    recoveryDismiss: 'Dismiss',
+  },
+};
+
+const FORM_TEXT = {
+  'zh-CN': {
+    btnTestOauth: '测试 OAuth 配置',
+    btnTestVerify: '测试验证源',
+    testing: '测试中...',
+    ok: '连接正常',
+    cpaAuthRequired: '这里必须填 CPA Auth 地址。',
+    sub2apiRequired: '这里必须填 Sub2API 根地址。',
+    managerUrlRequired: '这里必须填 MSMgr 地址。',
+    managerTokenRequired: '这里必须填 Token。',
+    managerModeRequired: '这里必须选择 Mode。',
+    oauthTestSuccess: (message) => `OAuth 配置可用：${message}`,
+    oauthTestFailure: (message) => `OAuth 配置测试失败：${message}`,
+    verifyTestSuccess: (message) => `验证源可用：${message}`,
+    verifyTestFailure: (message) => `验证源测试失败：${message}`,
+    verifyListSuccess: 'Manager API 可访问，Token 看起来可用',
+    oauthReachable: (status) => `地址可访问（HTTP ${status}）`,
+  },
+  'en-US': {
+    btnTestOauth: 'Test OAuth',
+    btnTestVerify: 'Test Verify',
+    testing: 'Testing...',
+    ok: 'Connection OK',
+    cpaAuthRequired: 'CPA Auth URL is required here.',
+    sub2apiRequired: 'Sub2API base URL is required here.',
+    managerUrlRequired: 'MSMgr URL is required.',
+    managerTokenRequired: 'Token is required.',
+    managerModeRequired: 'Mode is required.',
+    oauthTestSuccess: (message) => `OAuth config is reachable: ${message}`,
+    oauthTestFailure: (message) => `OAuth config test failed: ${message}`,
+    verifyTestSuccess: (message) => `Verify source is working: ${message}`,
+    verifyTestFailure: (message) => `Verify source test failed: ${message}`,
+    verifyListSuccess: 'Manager API responded and the token looks valid',
+    oauthReachable: (status) => `Endpoint responded (HTTP ${status})`,
+  },
+};
+
+const FIELD_HELP_TEXT = {
+  oauthProvider: {
+    url: 'https://your-cpa-host/management.html#/oauth',
+    'zh-CN': {
+      title: 'OAuth 目标',
+      description: '选择 OAuth 回调最终导入到哪里。CPA Auth 使用管理面板地址，Sub2API 使用站点根域名。',
+      referenceLabel: '示例入口',
+    },
+    'en-US': {
+      title: 'OAuth Target',
+      description: 'Choose where the OAuth callback will be imported. CPA Auth uses the management page, while Sub2API expects the site root domain.',
+      referenceLabel: 'Example entry',
+    },
+  },
+  cpaAuthUrl: {
+    url: 'https://your-cpa-host/management.html#/oauth',
+    'zh-CN': {
+      title: 'CPA Auth 地址',
+      description: '填写 CPA Auth 管理页的 OAuth 路径，格式通常是 management.html#/oauth。',
+      referenceLabel: '示例地址',
+    },
+    'en-US': {
+      title: 'CPA Auth URL',
+      description: 'Paste the CPA Auth management page OAuth route, usually the management.html#/oauth page.',
+      referenceLabel: 'Example URL',
+    },
+  },
+  cpaManagementKey: {
+    url: 'https://your-cpa-host/management.html#/oauth',
+    'zh-CN': {
+      title: 'CPA Management Key',
+      description: '输入明文的 Management Key，不要填加密后的哈希串。',
+      referenceLabel: '管理面板参考',
+    },
+    'en-US': {
+      title: 'CPA Management Key',
+      description: 'Enter the plaintext Management Key used by CPA Auth. Do not paste a hashed value.',
+      referenceLabel: 'Panel reference',
+    },
+  },
+  sub2apiBaseUrl: {
+    url: 'https://your-sub2api-host',
+    'zh-CN': {
+      title: 'Sub2API 根地址',
+      description: '只填写 Sub2API 的根域名，扩展会自动拼接管理员 API 路径。',
+      referenceLabel: '示例根域名',
+    },
+    'en-US': {
+      title: 'Sub2API Base URL',
+      description: 'Enter only the Sub2API root domain. The extension appends the admin API path automatically.',
+      referenceLabel: 'Example root domain',
+    },
+  },
+  sub2apiApiKey: {
+    url: 'https://your-sub2api-host/admin/acc',
+    'zh-CN': {
+      title: 'Sub2API API Key',
+      description: '如果你的 Sub2API 后台启用了鉴权，这里填写 x-api-key 或 Bearer token。',
+      referenceLabel: '后台入口',
+    },
+    'en-US': {
+      title: 'Sub2API API Key',
+      description: 'If your Sub2API admin API is protected, enter the x-api-key or Bearer token here.',
+      referenceLabel: 'Admin entry',
+    },
+  },
+  blockedAccountPolicy: {
+    url: 'https://github.com/Msg-Lbo/microsoft-account-manager',
+    'zh-CN': {
+      title: '封号处理',
+      description: '控制命中 AADSTS70000 时是删除账号还是仅跳过并切换到下一个账号。',
+      referenceLabel: '管理源说明',
+    },
+    'en-US': {
+      title: 'Blocked Handling',
+      description: 'Choose whether AADSTS70000 should delete the account or just skip it and move to the next one.',
+      referenceLabel: 'Manager reference',
+    },
+  },
+  verifyProvider: {
+    url: 'https://github.com/Msg-Lbo/microsoft-account-manager',
+    'zh-CN': {
+      title: '验证源',
+      description: '当前构建固定使用 Microsoft Account Manager API 作为验证码来源。',
+      referenceLabel: '项目参考',
+    },
+    'en-US': {
+      title: 'Verify Provider',
+      description: 'This build uses Microsoft Account Manager API as the verification source.',
+      referenceLabel: 'Project reference',
+    },
+  },
+  microsoftManagerUrl: {
+    url: 'https://your-manager-domain',
+    'zh-CN': {
+      title: 'MSMgr 地址',
+      description: '填写你部署好的 Microsoft Account Manager 根地址。',
+      referenceLabel: '示例地址',
+    },
+    'en-US': {
+      title: 'MS Manager URL',
+      description: 'Enter the base URL of your deployed Microsoft Account Manager.',
+      referenceLabel: 'Example URL',
+    },
+  },
+  microsoftManagerToken: {
+    url: 'https://github.com/Msg-Lbo/microsoft-account-manager',
+    'zh-CN': {
+      title: 'MAIL_API_TOKEN',
+      description: '填写 Microsoft Account Manager 服务端配置的 MAIL_API_TOKEN。',
+      referenceLabel: '配置参考',
+    },
+    'en-US': {
+      title: 'MAIL_API_TOKEN',
+      description: 'Paste the MAIL_API_TOKEN configured on your Microsoft Account Manager service.',
+      referenceLabel: 'Config reference',
+    },
+  },
+  microsoftManagerMode: {
+    url: 'https://github.com/Msg-Lbo/microsoft-account-manager',
+    'zh-CN': {
+      title: '获取模式',
+      description: '这里的模式需要与你的管理服务端配置一致，通常是 graph 或 imap。',
+      referenceLabel: '模式说明',
+    },
+    'en-US': {
+      title: 'Mode',
+      description: 'Match this mode with your manager backend configuration, typically graph or imap.',
+      referenceLabel: 'Mode reference',
+    },
+  },
+  microsoftManagerKeyword: {
+    url: 'https://your-manager-domain/api/open/accounts',
+    'zh-CN': {
+      title: '账号筛选',
+      description: '可选关键词，会传给账号查询接口，用于缩小自动取号范围。',
+      referenceLabel: '接口参考',
+    },
+    'en-US': {
+      title: 'Account Filter',
+      description: 'Optional keyword passed to the account query API to narrow the auto-fetch pool.',
+      referenceLabel: 'API reference',
+    },
+  },
+  microsoftManagerAliases: {
+    url: 'https://your-manager-domain/api/open/aliases',
+    'zh-CN': {
+      title: '别名池',
+      description: '启用后，自动取号会同时从主邮箱和别名邮箱里挑选可用账号。',
+      referenceLabel: '别名接口',
+    },
+    'en-US': {
+      title: 'Alias Pool',
+      description: 'When enabled, auto-fetch can use both primary and alias addresses from the manager.',
+      referenceLabel: 'Alias API',
+    },
+  },
+  email: {
+    url: 'https://your-manager-domain/api/open/accounts',
+    'zh-CN': {
+      title: 'Email',
+      description: '可以点击 Auto 从账号池取号，或者手动粘贴一个准备好的 Microsoft 账号。',
+      referenceLabel: '账号来源',
+    },
+    'en-US': {
+      title: 'Email',
+      description: 'Use Auto to pull the next available Microsoft account, or paste a prepared account manually.',
+      referenceLabel: 'Account source',
+    },
+  },
+  password: {
+    url: 'https://account.microsoft.com',
+    'zh-CN': {
+      title: 'Password',
+      description: '留空时扩展会自动生成强密码；如果你已有固定密码，也可以手动填入。',
+      referenceLabel: '账号参考',
+    },
+    'en-US': {
+      title: 'Password',
+      description: 'Leave this empty to auto-generate a strong password, or enter your own fixed password.',
+      referenceLabel: 'Account reference',
+    },
+  },
+  oauthRuntime: {
+    url: 'https://auth.openai.com',
+    'zh-CN': {
+      title: 'OAuth 链接',
+      description: 'Step 1 成功后这里会显示当前运行生成的授权链接。',
+      referenceLabel: '授权入口',
+    },
+    'en-US': {
+      title: 'OAuth Link',
+      description: 'After step 1 succeeds, this field shows the authorization URL generated for the current run.',
+      referenceLabel: 'Auth entry',
+    },
+  },
+  callbackRuntime: {
+    url: 'https://auth.openai.com',
+    'zh-CN': {
+      title: 'Callback',
+      description: '完成授权后，这里会显示捕获到的回调地址，供导入步骤继续使用。',
+      referenceLabel: '回调来源',
+    },
+    'en-US': {
+      title: 'Callback',
+      description: 'After authorization completes, this field shows the captured callback URL for the import step.',
+      referenceLabel: 'Callback source',
+    },
+  },
+  footerTrust: {
+    url: '',
+    'zh-CN': {
+      title: '',
+      description: '（老外做的，用放心呗）',
+      referenceLabel: '',
+    },
+    'en-US': {
+      title: '',
+      description: '（老外做的，用放心呗）',
+      referenceLabel: '',
+    },
   },
 };
 
@@ -315,8 +787,51 @@ function t(key, vars = {}) {
   return String(value).replace(/\{(\w+)\}/g, (_, name) => String(vars[name] ?? ''));
 }
 
+function tg(key) {
+  const pack = SETTINGS_GROUP_TEXT[currentLanguage] || SETTINGS_GROUP_TEXT['zh-CN'];
+  const fallbackPack = SETTINGS_GROUP_TEXT['zh-CN'];
+  return String(pack[key] ?? fallbackPack[key] ?? key);
+}
+
+function qt(key) {
+  const pack = QUICKSTART_TEXT[currentLanguage] || QUICKSTART_TEXT['zh-CN'];
+  const fallbackPack = QUICKSTART_TEXT['zh-CN'];
+  return String(pack[key] ?? fallbackPack[key] ?? key);
+}
+
+function at(key) {
+  const pack = ASSIST_TEXT[currentLanguage] || ASSIST_TEXT['zh-CN'];
+  const fallbackPack = ASSIST_TEXT['zh-CN'];
+  return String(pack[key] ?? fallbackPack[key] ?? key);
+}
+
+function ft(key, vars = {}) {
+  const pack = FORM_TEXT[currentLanguage] || FORM_TEXT['zh-CN'];
+  const fallbackPack = FORM_TEXT['zh-CN'];
+  const value = pack[key] ?? fallbackPack[key] ?? key;
+  if (typeof value === 'function') return value(vars.message ?? vars.status ?? '');
+  return String(value);
+}
+
+function getFieldHelpEntry(helpKey) {
+  const entry = FIELD_HELP_TEXT[helpKey];
+  if (!entry) return null;
+
+  const localized = entry[currentLanguage] || entry['zh-CN'] || {};
+  return {
+    title: localized.title || '',
+    description: localized.description || '',
+    referenceLabel: localized.referenceLabel || '',
+    url: entry.url || '',
+  };
+}
+
 function setAutoRunButton(label) {
-  btnAutoRun.innerHTML = `${AUTO_BUTTON_ICON} ${label}`;
+  if (btnAutoRunLabel) {
+    btnAutoRunLabel.textContent = label;
+  }
+  btnAutoRun.title = label;
+  btnAutoRun.setAttribute('aria-label', label);
 }
 
 function normalizeVersionValue(rawValue) {
@@ -379,10 +894,824 @@ function getVersionBadgeTitle() {
   return t('versionTooltipCheckFailed');
 }
 
+function isOauthGroupReady() {
+  return isSub2apiOauthProviderSelected()
+    ? Boolean(inputSub2apiBaseUrl.value.trim())
+    : Boolean(inputVpsUrl.value.trim());
+}
+
+function isVerifyGroupReady() {
+  return Boolean(inputMicrosoftManagerUrl.value.trim())
+    && Boolean(inputMicrosoftManagerToken.value.trim())
+    && Boolean(selectMicrosoftManagerMode.value);
+}
+
+function setQuickStartItemState(itemId, state, stateText, noteText) {
+  const item = document.querySelector(`[data-quickstart-item="${itemId}"]`);
+  const stateNode = document.getElementById(`quickstart-${itemId}-state`);
+  const noteNode = document.getElementById(`quickstart-${itemId}-note`);
+  if (!item || !stateNode || !noteNode) return;
+  item.dataset.state = state;
+  stateNode.textContent = stateText;
+  noteNode.textContent = noteText;
+}
+
+function renderQuickStartSummary() {
+  if (!quickstartTitle || !quickstartHint || !quickstartKicker) return;
+
+  const oauthReady = isOauthGroupReady();
+  const verifyReady = isVerifyGroupReady();
+  const emailReady = Boolean(inputEmail.value.trim());
+
+  quickstartKicker.textContent = qt('kicker');
+  quickstartTitle.textContent = qt('title');
+
+  setQuickStartItemState(
+    'oauth',
+    oauthReady ? 'ready' : 'attention',
+    oauthReady ? qt('oauthReady') : qt('oauthPending'),
+    oauthReady ? qt('oauthNoteReady') : qt('oauthNotePending')
+  );
+
+  setQuickStartItemState(
+    'verify',
+    verifyReady ? 'ready' : 'attention',
+    verifyReady ? qt('verifyReady') : qt('verifyPending'),
+    verifyReady ? qt('verifyNoteReady') : qt('verifyNotePending')
+  );
+
+  setQuickStartItemState(
+    'identity',
+    emailReady ? 'ready' : 'manual',
+    emailReady ? qt('identityReady') : qt('identityManual'),
+    emailReady ? qt('identityNoteReady') : qt('identityNoteManual')
+  );
+
+  if (!oauthReady) {
+    quickstartHint.textContent = qt('hintMissingOauth');
+  } else if (!verifyReady) {
+    quickstartHint.textContent = qt('hintMissingVerify');
+  } else {
+    quickstartHint.textContent = qt('hintReady');
+  }
+}
+
+function getMissingSetupIssues() {
+  const issues = [];
+  if (!isOauthGroupReady()) {
+    issues.push({ group: 'oauth' });
+  }
+  if (!isVerifyGroupReady()) {
+    issues.push({ group: 'verify' });
+  }
+  return issues;
+}
+
+function normalizeBaseUrl(value) {
+  const trimmed = String(value || '').trim();
+  if (!trimmed) return '';
+  const candidate = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    return new URL(candidate).toString();
+  } catch {
+    return '';
+  }
+}
+
+async function fetchWithTimeout(url, init = {}, timeoutMs = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      ...init,
+      cache: 'no-store',
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function setFieldValidation(row, control, messageNode, message = '') {
+  const invalid = Boolean(message);
+  row?.classList.toggle('is-invalid', invalid);
+  if (control) {
+    control.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+  }
+  if (messageNode) {
+    messageNode.hidden = !invalid;
+    messageNode.textContent = message;
+  }
+}
+
+function setActionResult(node, state, message = '') {
+  if (!node) return;
+  node.hidden = !message;
+  node.dataset.state = state || '';
+  node.textContent = message;
+}
+
+function refreshFieldValidation() {
+  const usingSub2api = isSub2apiOauthProviderSelected();
+
+  setFieldValidation(
+    rowCpaAuthUrl,
+    inputVpsUrl,
+    messageCpaAuthUrl,
+    !usingSub2api && !inputVpsUrl.value.trim() ? ft('cpaAuthRequired') : ''
+  );
+
+  setFieldValidation(
+    rowSub2apiBaseUrl,
+    inputSub2apiBaseUrl,
+    messageSub2apiBaseUrl,
+    usingSub2api && !inputSub2apiBaseUrl.value.trim() ? ft('sub2apiRequired') : ''
+  );
+
+  setFieldValidation(
+    rowMicrosoftManagerUrl,
+    inputMicrosoftManagerUrl,
+    messageMicrosoftManagerUrl,
+    !inputMicrosoftManagerUrl.value.trim() ? ft('managerUrlRequired') : ''
+  );
+
+  setFieldValidation(
+    rowMicrosoftManagerToken,
+    inputMicrosoftManagerToken,
+    messageMicrosoftManagerToken,
+    !inputMicrosoftManagerToken.value.trim() ? ft('managerTokenRequired') : ''
+  );
+
+  setFieldValidation(
+    rowMicrosoftManagerMode,
+    selectMicrosoftManagerMode,
+    messageMicrosoftManagerMode,
+    !selectMicrosoftManagerMode.value ? ft('managerModeRequired') : ''
+  );
+}
+
+function focusSettingsGroup(groupId) {
+  const refs = settingsGroupRefs[groupId];
+  if (!refs?.element) return;
+  settingsGroupState[groupId] = true;
+  syncSettingsGroups();
+  refs.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function focusRunCountInput() {
+  inputRunCount?.focus();
+  inputRunCount?.select?.();
+}
+
+function inferRecoveryGroupFromMessage(message) {
+  const text = String(message || '').toLowerCase();
+  if (!text) return 'oauth';
+  if (text.includes('mail_api_token') || text.includes('token') || text.includes('msmgr') || text.includes('graph') || text.includes('imap') || text.includes('manager')) {
+    return 'verify';
+  }
+  if (text.includes('email')) {
+    return 'identity';
+  }
+  if (text.includes('oauth') || text.includes('sub2api') || text.includes('cpa') || text.includes('management') || text.includes('callback')) {
+    return 'oauth';
+  }
+  return 'oauth';
+}
+
+function configureAssistButton(button, { hidden = false, label = '', handler = null } = {}) {
+  if (!button) return;
+  button.hidden = hidden;
+  if (hidden) {
+    button.onclick = null;
+    return;
+  }
+  button.textContent = label;
+  button.onclick = handler;
+}
+
+function hideAssistBanner() {
+  if (assistSection) {
+    assistSection.hidden = true;
+  }
+}
+
+function renderAssistBanner() {
+  if (!assistSection || !assistKicker || !assistTitle || !assistMessage) return;
+
+  const missingIssues = getMissingSetupIssues();
+  const onboardingDismissed = localStorage.getItem(ONBOARDING_DISMISS_KEY) === '1';
+
+  if (assistRecoveryMessage) {
+    const recoveryGroup = inferRecoveryGroupFromMessage(assistRecoveryMessage);
+    assistSection.hidden = false;
+    assistBannerMode = 'recovery';
+    assistKicker.textContent = at('recoveryKicker');
+    assistTitle.textContent = at('recoveryTitle');
+    assistMessage.textContent = `${at('recoveryMessagePrefix')} ${assistRecoveryMessage}`;
+    configureAssistButton(btnAssistPrimary, {
+      label: recoveryGroup === 'verify'
+        ? at('recoveryPrimaryVerify')
+        : recoveryGroup === 'identity'
+          ? at('recoveryPrimaryIdentity')
+          : at('recoveryPrimaryOauth'),
+      handler: () => focusSettingsGroup(recoveryGroup),
+    });
+    configureAssistButton(btnAssistSecondary, { hidden: true });
+    configureAssistButton(btnAssistDismiss, {
+      hidden: false,
+      label: at('recoveryDismiss'),
+      handler: () => {
+        assistRecoveryMessage = '';
+        renderAssistBanner();
+      },
+    });
+    return;
+  }
+
+  if (missingIssues.length > 0) {
+    assistSection.hidden = false;
+    assistBannerMode = 'setup';
+    assistKicker.textContent = at('setupKicker');
+    assistTitle.textContent = at('setupTitle');
+    assistMessage.textContent = missingIssues.length > 1 ? at('setupMessageOne') : at('setupMessageTwo');
+
+    const firstIssue = missingIssues[0];
+    configureAssistButton(btnAssistPrimary, {
+      label: firstIssue.group === 'oauth' ? at('setupPrimaryOauth') : at('setupPrimaryVerify'),
+      handler: () => focusSettingsGroup(firstIssue.group),
+    });
+
+    const secondIssue = missingIssues[1];
+    configureAssistButton(btnAssistSecondary, secondIssue ? {
+      hidden: false,
+      label: secondIssue.group === 'verify' ? at('setupSecondaryVerify') : at('setupPrimaryOauth'),
+      handler: () => focusSettingsGroup(secondIssue.group),
+    } : { hidden: true });
+
+    configureAssistButton(btnAssistDismiss, {
+      hidden: false,
+      label: at('setupDismiss'),
+      handler: hideAssistBanner,
+    });
+    return;
+  }
+
+  if (!onboardingDismissed) {
+    assistSection.hidden = false;
+    assistBannerMode = 'onboarding';
+    assistKicker.textContent = at('onboardingKicker');
+    assistTitle.textContent = at('onboardingTitle');
+    assistMessage.textContent = at('onboardingMessage');
+    configureAssistButton(btnAssistPrimary, {
+      label: at('onboardingPrimary'),
+      handler: focusRunCountInput,
+    });
+    configureAssistButton(btnAssistSecondary, { hidden: true });
+    configureAssistButton(btnAssistDismiss, {
+      hidden: false,
+      label: at('onboardingDismiss'),
+      handler: () => {
+        localStorage.setItem(ONBOARDING_DISMISS_KEY, '1');
+        renderAssistBanner();
+      },
+    });
+    return;
+  }
+
+  hideAssistBanner();
+}
+
+function validateRunPreflight() {
+  const issues = getMissingSetupIssues();
+  if (!issues.length) return true;
+
+  assistRecoveryMessage = '';
+  renderAssistBanner();
+  focusSettingsGroup(issues[0].group);
+  showToast(
+    currentLanguage === 'zh-CN'
+      ? '还不能开始，请先把待填写的配置补齐。'
+      : 'You cannot run yet. Finish the required setup first.',
+    'warn',
+    5200
+  );
+  return false;
+}
+
+async function testOAuthConfig() {
+  refreshFieldValidation();
+  setActionResult(oauthTestResult, '', '');
+
+  const usingSub2api = isSub2apiOauthProviderSelected();
+  const targetValue = usingSub2api ? inputSub2apiBaseUrl.value.trim() : inputVpsUrl.value.trim();
+
+  if (!targetValue) {
+    focusSettingsGroup('oauth');
+    return;
+  }
+
+  const url = normalizeBaseUrl(targetValue);
+  if (!url) {
+    setActionResult(oauthTestResult, 'error', ft('oauthTestFailure', { message: 'URL 无效' }));
+    return;
+  }
+
+  const originalLabel = btnTestOauth?.textContent || '';
+  if (btnTestOauth) {
+    btnTestOauth.disabled = true;
+    btnTestOauth.textContent = ft('testing');
+  }
+
+  try {
+    const response = await fetchWithTimeout(url, { method: 'GET' }, 6000);
+    const reachable = response.ok || response.status === 401 || response.status === 403;
+    if (!reachable) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const message = ft('oauthReachable', { status: response.status || 200 });
+    setActionResult(oauthTestResult, 'success', message);
+    showToast(ft('oauthTestSuccess', { message }), 'success', 2600);
+  } catch (err) {
+    const message = err?.name === 'AbortError' ? '请求超时' : (err?.message || '请求失败');
+    setActionResult(oauthTestResult, 'error', message);
+    showToast(ft('oauthTestFailure', { message }), 'error');
+  } finally {
+    if (btnTestOauth) {
+      btnTestOauth.disabled = false;
+      btnTestOauth.textContent = originalLabel || ft('btnTestOauth');
+    }
+  }
+}
+
+async function testVerifyConfig() {
+  refreshFieldValidation();
+  setActionResult(verifyTestResult, '', '');
+
+  if (!isVerifyGroupReady()) {
+    focusSettingsGroup('verify');
+    return;
+  }
+
+  const baseUrl = normalizeBaseUrl(inputMicrosoftManagerUrl.value.trim());
+  if (!baseUrl) {
+    setActionResult(verifyTestResult, 'error', 'MSMgr 地址无效');
+    return;
+  }
+
+  const testUrl = new URL('/api/open/accounts', baseUrl);
+  testUrl.searchParams.set('keyword', '');
+
+  const originalLabel = btnTestVerify?.textContent || '';
+  if (btnTestVerify) {
+    btnTestVerify.disabled = true;
+    btnTestVerify.textContent = ft('testing');
+  }
+
+  try {
+    const response = await fetchWithTimeout(testUrl.toString(), {
+      method: 'GET',
+      headers: {
+        'x-mail-api-token': inputMicrosoftManagerToken.value.trim(),
+      },
+    }, 7000);
+
+    let payload = {};
+    try {
+      payload = await response.json();
+    } catch {
+      payload = {};
+    }
+
+    if (!response.ok) {
+      const message = String(payload?.message || payload?.error || `HTTP ${response.status}`).trim();
+      throw new Error(message);
+    }
+
+    const message = ft('verifyListSuccess');
+    setActionResult(verifyTestResult, 'success', message);
+    showToast(ft('verifyTestSuccess', { message }), 'success', 2600);
+  } catch (err) {
+    const message = err?.name === 'AbortError' ? '请求超时' : (err?.message || '请求失败');
+    setActionResult(verifyTestResult, 'error', message);
+    showToast(ft('verifyTestFailure', { message }), 'error');
+  } finally {
+    if (btnTestVerify) {
+      btnTestVerify.disabled = false;
+      btnTestVerify.textContent = originalLabel || ft('btnTestVerify');
+    }
+  }
+}
+
+function getSettingsGroupSummary(groupId) {
+  switch (groupId) {
+    case 'oauth':
+      return {
+        isAttention: !isOauthGroupReady(),
+        statusKey: isOauthGroupReady() ? 'groupStatusReady' : 'groupStatusAttention',
+      };
+    case 'verify':
+      return {
+        isAttention: !isVerifyGroupReady(),
+        statusKey: isVerifyGroupReady() ? 'groupStatusReady' : 'groupStatusAttention',
+      };
+    case 'identity':
+      return {
+        isAttention: false,
+        statusKey: inputEmail.value.trim() ? 'groupStatusReady' : 'groupStatusManual',
+      };
+    case 'runtime':
+      return {
+        isAttention: false,
+        statusKey: displayOauthUrl.classList.contains('has-value') || displayLocalhostUrl.classList.contains('has-value')
+          ? 'groupStatusReady'
+          : 'groupStatusWaiting',
+      };
+    default:
+      return {
+        isAttention: false,
+        statusKey: 'groupStatusWaiting',
+      };
+  }
+}
+
+function renderSettingsGroupCopy() {
+  document.querySelectorAll('[data-settings-group-copy]').forEach((node) => {
+    const key = node.dataset.settingsGroupCopy;
+    node.textContent = tg(key);
+  });
+}
+
+function syncSettingsGroups() {
+  refreshFieldValidation();
+  Object.entries(settingsGroupRefs).forEach(([groupId, refs]) => {
+    if (!refs?.element || !refs?.toggle || !refs?.body || !refs?.status) return;
+
+    const summary = getSettingsGroupSummary(groupId);
+    const expanded = summary.isAttention ? true : Boolean(settingsGroupState[groupId]);
+
+    refs.element.classList.toggle('is-expanded', expanded);
+    refs.element.classList.toggle('is-attention', summary.isAttention);
+    refs.element.classList.toggle('is-ready', !summary.isAttention && summary.statusKey === 'groupStatusReady');
+    refs.element.classList.toggle('is-manual', summary.statusKey === 'groupStatusManual');
+    refs.body.hidden = !expanded;
+    refs.toggle.setAttribute('aria-expanded', String(expanded));
+    refs.status.textContent = tg(summary.statusKey);
+    refs.status.dataset.state = summary.statusKey.replace('groupStatus', '').toLowerCase();
+  });
+  renderQuickStartSummary();
+  renderAssistBanner();
+}
+
+function initSettingsGroups() {
+  Object.entries(settingsGroupRefs).forEach(([groupId, refs]) => {
+    if (!refs?.toggle) return;
+    settingsGroupState[groupId] = false;
+    refs.toggle.addEventListener('click', () => {
+      const summary = getSettingsGroupSummary(groupId);
+      if (summary.isAttention) {
+        syncSettingsGroups();
+        return;
+      }
+      settingsGroupState[groupId] = refs.body.hidden;
+      syncSettingsGroups();
+    });
+  });
+  syncSettingsGroups();
+}
+
+function clearFieldHoverCardTimers() {
+  if (fieldHoverCardOpenTimer !== null) {
+    clearTimeout(fieldHoverCardOpenTimer);
+    fieldHoverCardOpenTimer = null;
+  }
+  if (fieldHoverCardCloseTimer !== null) {
+    clearTimeout(fieldHoverCardCloseTimer);
+    fieldHoverCardCloseTimer = null;
+  }
+}
+
+function positionFieldHoverCard(trigger) {
+  if (!fieldHoverCard || !trigger) return;
+
+  const triggerRect = trigger.getBoundingClientRect();
+  const cardWidth = fieldHoverCard.offsetWidth;
+  const cardHeight = fieldHoverCard.offsetHeight;
+  const gap = 12;
+  const viewportPadding = 12;
+
+  let left = triggerRect.right + gap;
+  let top = triggerRect.top + (triggerRect.height / 2) - (cardHeight / 2);
+
+  if (left + cardWidth > window.innerWidth - viewportPadding) {
+    left = Math.min(
+      Math.max(viewportPadding, triggerRect.left),
+      window.innerWidth - cardWidth - viewportPadding
+    );
+    top = triggerRect.bottom + gap;
+  }
+
+  if (top + cardHeight > window.innerHeight - viewportPadding) {
+    top = Math.max(
+      viewportPadding,
+      Math.min(triggerRect.top - cardHeight - gap, window.innerHeight - cardHeight - viewportPadding)
+    );
+  }
+
+  if (top < viewportPadding) {
+    top = viewportPadding;
+  }
+
+  fieldHoverCard.style.left = `${Math.max(viewportPadding, left)}px`;
+  fieldHoverCard.style.top = `${top}px`;
+}
+
+function renderFieldHoverCard(trigger, helpKey) {
+  const entry = getFieldHelpEntry(helpKey);
+  if (!fieldHoverCard || !fieldHoverCardTitle || !fieldHoverCardDescription || !fieldHoverCardReference || !fieldHoverCardReferenceLabel || !fieldHoverCardLink || !entry) {
+    return;
+  }
+
+  fieldHoverCardTitle.textContent = entry.title;
+  fieldHoverCardTitle.hidden = !entry.title;
+  fieldHoverCardDescription.textContent = entry.description;
+  const hasReference = Boolean(entry.url);
+  fieldHoverCardReference.hidden = !hasReference;
+  if (hasReference) {
+    fieldHoverCardReferenceLabel.textContent = entry.referenceLabel || 'Reference';
+    fieldHoverCardLink.href = entry.url;
+    fieldHoverCardLink.textContent = entry.url;
+    fieldHoverCardLink.title = entry.url;
+  } else {
+    fieldHoverCardLink.removeAttribute('href');
+    fieldHoverCardLink.textContent = '';
+    fieldHoverCardLink.title = '';
+  }
+
+  fieldHoverCard.hidden = false;
+  fieldHoverCard.classList.remove('is-visible');
+  fieldHoverCard.classList.add('is-measuring');
+  positionFieldHoverCard(trigger);
+  fieldHoverCard.classList.remove('is-measuring');
+  fieldHoverCard.classList.add('is-visible');
+}
+
+function hideFieldHoverCard(options = {}) {
+  const { immediate = false } = options;
+  clearFieldHoverCardTimers();
+
+  const doHide = () => {
+    if (!fieldHoverCard) return;
+    fieldHoverCard.classList.remove('is-visible');
+    fieldHoverCard.hidden = true;
+    activeFieldHoverKey = '';
+    activeFieldHoverTrigger = null;
+  };
+
+  if (immediate) {
+    doHide();
+    return;
+  }
+
+  fieldHoverCardCloseTimer = window.setTimeout(doHide, 180);
+}
+
+function scheduleFieldHoverCard(trigger, helpKey) {
+  clearFieldHoverCardTimers();
+  fieldHoverCardOpenTimer = window.setTimeout(() => {
+    activeFieldHoverTrigger = trigger;
+    activeFieldHoverKey = helpKey;
+    renderFieldHoverCard(trigger, helpKey);
+  }, 120);
+}
+
+function initFieldHoverCard() {
+  const triggers = document.querySelectorAll('[data-help-key]');
+
+  triggers.forEach((trigger) => {
+    const variant = trigger.dataset.helpVariant || (trigger.classList.contains('data-label') ? 'label' : 'icon');
+    if (variant === 'label') {
+      trigger.classList.add('field-help-trigger');
+      trigger.tabIndex = 0;
+      trigger.setAttribute('role', 'button');
+      trigger.setAttribute('aria-haspopup', 'dialog');
+    }
+
+    const helpKey = trigger.dataset.helpKey;
+    if (!helpKey) return;
+
+    trigger.addEventListener('mouseenter', () => scheduleFieldHoverCard(trigger, helpKey));
+    trigger.addEventListener('mouseleave', () => hideFieldHoverCard());
+    trigger.addEventListener('focus', () => scheduleFieldHoverCard(trigger, helpKey));
+    trigger.addEventListener('blur', () => hideFieldHoverCard());
+    trigger.addEventListener('click', () => {
+      if (activeFieldHoverKey === helpKey && !fieldHoverCard?.hidden) {
+        hideFieldHoverCard({ immediate: true });
+        return;
+      }
+      scheduleFieldHoverCard(trigger, helpKey);
+    });
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      if (activeFieldHoverKey === helpKey && !fieldHoverCard?.hidden) {
+        hideFieldHoverCard({ immediate: true });
+        return;
+      }
+      scheduleFieldHoverCard(trigger, helpKey);
+    });
+  });
+
+  fieldHoverCard?.addEventListener('mouseenter', () => {
+    clearFieldHoverCardTimers();
+  });
+  fieldHoverCard?.addEventListener('mouseleave', () => {
+    hideFieldHoverCard();
+  });
+
+  window.addEventListener('resize', () => {
+    if (activeFieldHoverTrigger && activeFieldHoverKey && !fieldHoverCard?.hidden) {
+      renderFieldHoverCard(activeFieldHoverTrigger, activeFieldHoverKey);
+    }
+  });
+  window.addEventListener('scroll', () => {
+    if (activeFieldHoverKey) {
+      hideFieldHoverCard({ immediate: true });
+    }
+  }, true);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideFieldHoverCard({ immediate: true });
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (fieldHoverCard?.contains(target)) return;
+    const trigger = target instanceof Element ? target.closest('.field-help-trigger') : null;
+    if (trigger) return;
+    hideFieldHoverCard({ immediate: true });
+  });
+}
+
+function renderRunWindowStepShell() {
+  if (!runWindowStepsList) return;
+
+  const rows = WORKFLOW_STEPS.map((step) => `
+    <div class="step-row" data-step="${step}">
+      <div class="step-indicator" data-step="${step}"><span class="step-num">${step}</span></div>
+      <button class="step-btn" data-step="${step}" type="button" disabled aria-hidden="true">${escapeHtml(t(`step${step}`))}</button>
+      <button class="step-skip-btn btn btn-ghost btn-xs" data-step="${step}" type="button" disabled aria-hidden="true">${escapeHtml(t('btnSkip'))}</button>
+      <span class="step-status" data-step="${step}"></span>
+    </div>
+  `).join('');
+
+  runWindowStepsList.innerHTML = rows;
+  syncRunWindowMirrors();
+}
+
+function syncRunWindowWorkflowFromMain() {
+  if (!runWindowStepsList || !runWindowStepsProgress) return;
+
+  const mainRows = Array.from(document.querySelectorAll('#steps-section .step-row'));
+  const windowRows = Array.from(runWindowStepsList.querySelectorAll('.step-row'));
+
+  windowRows.forEach((row, index) => {
+    const mainRow = mainRows[index];
+    if (!mainRow) return;
+
+    const rowClasses = Array.from(mainRow.classList).filter((name) => name !== 'step-row');
+    row.className = `step-row ${rowClasses.join(' ')}`.trim();
+
+    const mainStatus = mainRow.querySelector('.step-status');
+    const mirrorStatus = row.querySelector('.step-status');
+    if (mainStatus && mirrorStatus) {
+      mirrorStatus.textContent = mainStatus.textContent;
+    }
+  });
+
+  runWindowStepsProgress.textContent = stepsProgress.textContent;
+}
+
+function syncRunWindowLogFromMain() {
+  if (!runWindowLogArea) return;
+  runWindowLogArea.innerHTML = logArea.innerHTML;
+  if (runWindowOverlay && !runWindowOverlay.hidden) {
+    runWindowLogArea.scrollTop = runWindowLogArea.scrollHeight;
+  }
+}
+
+function syncRunWindowMirrors() {
+  syncRunWindowWorkflowFromMain();
+  syncRunWindowLogFromMain();
+}
+
+function openRunWindow() {
+  if (!runWindowOverlay) return;
+  if (runWindowCloseTimer !== null) {
+    clearTimeout(runWindowCloseTimer);
+    runWindowCloseTimer = null;
+  }
+
+  syncRunWindowMirrors();
+  runWindowOverlay.hidden = false;
+  runWindowOverlay.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => {
+    runWindowOverlay.classList.add('is-visible');
+  });
+}
+
+function closeRunWindow() {
+  if (!runWindowOverlay || runWindowOverlay.hidden) return;
+  runWindowOverlay.classList.remove('is-visible');
+  runWindowOverlay.setAttribute('aria-hidden', 'true');
+  runWindowCloseTimer = window.setTimeout(() => {
+    runWindowOverlay.hidden = true;
+  }, 280);
+}
+
+function initRunWindow() {
+  renderRunWindowStepShell();
+
+  btnWindowStop?.addEventListener('click', async () => {
+    await requestStopFlow();
+  });
+
+  runWindowBackdrop?.addEventListener('click', () => {
+    closeRunWindow();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && runWindowOverlay && !runWindowOverlay.hidden) {
+      closeRunWindow();
+    }
+  });
+}
+
+function openDocsWindow() {
+  if (!docsWindowOverlay) return;
+  docsWindowOverlay.hidden = false;
+  docsWindowOverlay.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(() => {
+    docsWindowOverlay.classList.add('is-visible');
+  });
+}
+
+function closeDocsWindow() {
+  if (!docsWindowOverlay || docsWindowOverlay.hidden) return;
+  docsWindowOverlay.classList.remove('is-visible');
+  docsWindowOverlay.setAttribute('aria-hidden', 'true');
+  window.setTimeout(() => {
+    docsWindowOverlay.hidden = true;
+  }, 220);
+}
+
+function initDocsWindow() {
+  btnFooterHelp?.addEventListener('click', () => {
+    openDocsWindow();
+  });
+
+  btnDocsClose?.addEventListener('click', () => {
+    closeDocsWindow();
+  });
+
+  docsWindowBackdrop?.addEventListener('click', () => {
+    closeDocsWindow();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && docsWindowOverlay && !docsWindowOverlay.hidden) {
+      closeDocsWindow();
+    }
+  });
+}
+
+function getStandaloneTitle() {
+  if (!isStandaloneView) {
+    return String(manifestInfo.name || 'EXtZerzor');
+  }
+  return `${String(manifestInfo.name || 'extzarzoor')} · ${t('standaloneTitle')}`;
+}
+
+function renderLanguageToggle() {
+  if (!btnLanguage || !displayLanguageToggle) return;
+
+  displayLanguageToggle.textContent = t('languageToggleLabel');
+  const title = currentLanguage === 'zh-CN'
+    ? `切换到 ${t('languageToggleNextName')}`
+    : `Switch to ${t('languageToggleNextName')}`;
+  btnLanguage.title = title;
+  btnLanguage.setAttribute('aria-label', title);
+}
+
 function renderVersionBadge() {
   if (appTitle) {
-    appTitle.textContent = String(manifestInfo.name || 'MSRegFlow');
+    appTitle.textContent = String(manifestInfo.name || 'extzarzoor');
   }
+
+  document.title = getStandaloneTitle();
 
   if (displayVersion) {
     displayVersion.textContent = currentManifestVersionLabel;
@@ -398,6 +1727,15 @@ function renderVersionBadge() {
 
 async function checkLatestReleaseVersion() {
   if (versionCheckInFlight) return;
+
+  if (!hasReleaseRepo) {
+    latestReleaseVersion = currentManifestVersion;
+    latestReleaseUrl = '';
+    hasNewRelease = false;
+    isVersionCheckFinished = true;
+    renderVersionBadge();
+    return;
+  }
 
   versionCheckInFlight = true;
   isVersionCheckFinished = false;
@@ -447,6 +1785,9 @@ async function checkLatestReleaseVersion() {
 }
 
 function getVersionOpenUrl() {
+  if (!hasReleaseRepo) {
+    return '';
+  }
   const currentReleaseUrl = `https://github.com/${releaseRepo}/releases/tag/${currentManifestVersion}`;
   if (hasNewRelease && latestReleaseUrl) {
     return latestReleaseUrl;
@@ -459,6 +1800,10 @@ function getVersionOpenUrl() {
 
 async function openVersionPage() {
   const url = getVersionOpenUrl();
+  if (!url) {
+    showToast(getVersionBadgeTitle(), 'info', 2200);
+    return;
+  }
   try {
     await chrome.tabs.create({ url, active: true });
   } catch {
@@ -638,15 +1983,13 @@ function updateOauthProviderUI() {
   rowCpaAuthKey.style.display = useSub2api ? 'none' : '';
   rowSub2apiBaseUrl.style.display = useSub2api ? '' : 'none';
   rowSub2apiApiKey.style.display = useSub2api ? '' : 'none';
+  syncSettingsGroups();
 }
 
 function applyLanguage(language) {
   currentLanguage = I18N[language] ? language : 'zh-CN';
-  localStorage.setItem('multipage-language', currentLanguage);
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, currentLanguage);
   document.documentElement.lang = currentLanguage;
-  if (selectLanguage) {
-    selectLanguage.value = currentLanguage;
-  }
 
   document.querySelectorAll('[data-i18n]').forEach((node) => {
     const key = node.dataset.i18n;
@@ -658,7 +2001,9 @@ function applyLanguage(language) {
   });
   document.querySelectorAll('[data-i18n-title]').forEach((node) => {
     const key = node.dataset.i18nTitle;
-    node.title = t(key);
+    const title = t(key);
+    node.title = title;
+    node.setAttribute('aria-label', title);
   });
 
   inputPassword.placeholder = t('placeholderPassword');
@@ -671,8 +2016,22 @@ function applyLanguage(language) {
   updateOauthProviderUI();
   updateMailProviderUI();
   updateEmailSourceUI();
+  renderRunWindowStepShell();
   syncPasswordToggleLabel();
+  renderLanguageToggle();
+  renderSettingsGroupCopy();
+  if (btnTestOauth && !btnTestOauth.disabled) {
+    btnTestOauth.textContent = ft('btnTestOauth');
+  }
+  if (btnTestVerify && !btnTestVerify.disabled) {
+    btnTestVerify.textContent = ft('btnTestVerify');
+  }
+  if (activeFieldHoverTrigger && activeFieldHoverKey && !fieldHoverCard?.hidden) {
+    renderFieldHoverCard(activeFieldHoverTrigger, activeFieldHoverKey);
+  }
   updateProgressCounter();
+  syncSettingsGroups();
+  syncRunWindowMirrors();
   renderVersionBadge();
   if (lastKnownState) {
     updateStatusDisplay(lastKnownState);
@@ -685,6 +2044,7 @@ function applyLanguage(language) {
 async function saveVpsUrlValue(value) {
   const vpsUrl = String(value || '').trim();
   inputVpsUrl.value = vpsUrl;
+  syncSettingsGroups();
   if (!vpsUrl) return;
   await chrome.runtime.sendMessage({
     type: 'SAVE_SETTING',
@@ -726,16 +2086,41 @@ async function pasteCpaAuthFromClipboard(options = {}) {
   }
 }
 
-function showToast(message, type = 'error', duration = 4000) {
+function createToastElement(message, type) {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `${TOAST_ICONS[type] || ''}<span class="toast-msg">${escapeHtml(message)}</span><button class="toast-close">&times;</button>`;
+  toast.querySelector('.toast-close').addEventListener('click', (event) => {
+    event.stopPropagation();
+    dismissToast(toast);
+  });
+  toast.addEventListener('click', () => dismissToast(toast));
+  return toast;
+}
 
-  toast.querySelector('.toast-close').addEventListener('click', () => dismissToast(toast));
-  toastContainer.appendChild(toast);
+function showToast(message, type = 'error', duration) {
+  const primaryToast = createToastElement(message, type);
 
-  if (duration > 0) {
-    setTimeout(() => dismissToast(toast), duration);
+  const resolvedDuration = typeof duration === 'number'
+    ? duration
+    : type === 'error'
+      ? 9000
+      : type === 'warn'
+        ? 5000
+        : 4000;
+
+  toastContainer.appendChild(primaryToast);
+
+  if (runWindowOverlay && !runWindowOverlay.hidden && runWindowToastContainer) {
+    const windowToast = createToastElement(message, type);
+    runWindowToastContainer.appendChild(windowToast);
+    if (resolvedDuration > 0) {
+      setTimeout(() => dismissToast(windowToast), resolvedDuration);
+    }
+  }
+
+  if (resolvedDuration > 0) {
+    setTimeout(() => dismissToast(primaryToast), resolvedDuration);
   }
 }
 
@@ -783,9 +2168,6 @@ async function restoreState() {
       inputSub2apiApiKey.value = state.sub2apiAdminApiKey;
     }
     checkboxDeleteBlockedAccount.checked = Boolean(state.deleteAbusedMicrosoftAccount);
-    if (state.language) {
-      selectLanguage.value = state.language;
-    }
     if (state.mailProvider) {
       selectMailProvider.value = normalizeMailProviderValue(state.mailProvider);
     } else {
@@ -822,6 +2204,7 @@ async function restoreState() {
     updateOauthProviderUI();
     updateMailProviderUI();
     updateEmailSourceUI();
+    syncRunWindowMirrors();
 
     if (state.autoRunPausedPhase === 'waiting_email') {
       autoContinueBar.dataset.reason = 'waiting_email';
@@ -855,6 +2238,7 @@ function updateMailProviderUI() {
   rowMicrosoftManagerMode.style.display = useMicrosoftManager ? '' : 'none';
   rowMicrosoftManagerKeyword.style.display = useMicrosoftManager ? '' : 'none';
   rowMicrosoftManagerAliasToggle.style.display = useMicrosoftManager ? '' : 'none';
+  syncSettingsGroups();
 }
 
 function updateEmailSourceUI() {
@@ -862,6 +2246,7 @@ function updateEmailSourceUI() {
   autoHint.textContent = getAutoHintText();
   btnFetchEmail.disabled = false;
   btnFetchEmail.title = getFetchEmailTitle();
+  syncSettingsGroups();
 }
 
 async function syncRuntimeSettingsBeforeExecution() {
@@ -901,6 +2286,7 @@ function updateStepUI(step, status) {
 
   updateButtonStates();
   updateProgressCounter();
+  syncRunWindowWorkflowFromMain();
 }
 
 function getVisibleStepEntries(stepStatuses = {}) {
@@ -909,15 +2295,18 @@ function getVisibleStepEntries(stepStatuses = {}) {
 
 function updateProgressCounter() {
   let completed = 0;
-  document.querySelectorAll('.step-row').forEach(row => {
+  document.querySelectorAll('#steps-section .step-row').forEach(row => {
     if (row.classList.contains('completed') || row.classList.contains('skipped')) completed++;
   });
   stepsProgress.textContent = `${completed} / ${TOTAL_STEPS}`;
+  if (runWindowStepsProgress) {
+    runWindowStepsProgress.textContent = stepsProgress.textContent;
+  }
 }
 
 function updateButtonStates() {
   const statuses = {};
-  document.querySelectorAll('.step-row').forEach(row => {
+  document.querySelectorAll('#steps-section .step-row').forEach(row => {
     const step = Number(row.dataset.step);
     if (row.classList.contains('completed')) statuses[step] = 'completed';
     else if (row.classList.contains('skipped')) statuses[step] = 'skipped';
@@ -930,8 +2319,8 @@ function updateButtonStates() {
   const anyRunning = Object.values(statuses).some(s => s === 'running');
 
   for (const step of WORKFLOW_STEPS) {
-    const btn = document.querySelector(`.step-btn[data-step="${step}"]`);
-    const skipBtn = document.querySelector(`.step-skip-btn[data-step="${step}"]`);
+    const btn = document.querySelector(`#steps-section .step-btn[data-step="${step}"]`);
+    const skipBtn = document.querySelector(`#steps-section .step-skip-btn[data-step="${step}"]`);
     if (!btn) continue;
 
     const currentStatus = statuses[step];
@@ -964,6 +2353,9 @@ function updateButtonStates() {
 
 function updateStopButtonState(active) {
   btnStop.disabled = !active;
+  if (btnWindowStop) {
+    btnWindowStop.disabled = !active;
+  }
 }
 
 function updateStatusDisplay(state) {
@@ -1036,6 +2428,7 @@ function appendLog(entry) {
   line.innerHTML = html;
   logArea.appendChild(line);
   logArea.scrollTop = logArea.scrollHeight;
+  syncRunWindowLogFromMain();
 }
 
 function escapeHtml(text) {
@@ -1064,6 +2457,7 @@ async function fetchConfiguredEmail() {
     }
 
     inputEmail.value = response.email;
+    syncSettingsGroups();
     showToast(t('fetchedEmail', { email: response.email }), 'success', 2500);
     return response.email;
   } catch (err) {
@@ -1077,6 +2471,15 @@ async function fetchConfiguredEmail() {
 
 function syncPasswordToggleLabel() {
   btnTogglePassword.textContent = inputPassword.type === 'password' ? t('btnShow') : t('btnHide');
+}
+
+async function requestStopFlow() {
+  btnStop.disabled = true;
+  if (btnWindowStop) {
+    btnWindowStop.disabled = true;
+  }
+  await chrome.runtime.sendMessage({ type: 'STOP_FLOW', source: 'sidepanel', payload: {} });
+  showToast(t('stoppingFlow'), 'warn', 2000);
 }
 
 // ============================================================
@@ -1144,19 +2547,32 @@ btnVersion.addEventListener('click', async () => {
   await openVersionPage();
 });
 
+btnTestOauth?.addEventListener('click', async () => {
+  await testOAuthConfig();
+});
+
+btnTestVerify?.addEventListener('click', async () => {
+  await testVerifyConfig();
+});
+
 btnStop.addEventListener('click', async () => {
-  btnStop.disabled = true;
-  await chrome.runtime.sendMessage({ type: 'STOP_FLOW', source: 'sidepanel', payload: {} });
-  showToast(t('stoppingFlow'), 'warn', 2000);
+  await requestStopFlow();
 });
 
 // Auto Run
 btnAutoRun.addEventListener('click', async () => {
+  if (!validateRunPreflight()) {
+    return;
+  }
+
+  assistRecoveryMessage = '';
+  renderAssistBanner();
   const totalRuns = parseInt(inputRunCount.value) || 1;
   resetRunMetrics();
   btnAutoRun.disabled = true;
   inputRunCount.disabled = true;
   setAutoRunButton(t('autoRunRunning', { runLabel: '' }));
+  openRunWindow();
   await syncRuntimeSettingsBeforeExecution();
   await chrome.runtime.sendMessage({ type: 'AUTO_RUN', source: 'sidepanel', payload: { totalRuns } });
 });
@@ -1193,27 +2609,31 @@ btnReset.addEventListener('click', async () => {
     displayStatus.textContent = t('statusReady');
     statusBar.className = 'status-bar';
     logArea.innerHTML = '';
-    document.querySelectorAll('.step-row').forEach(row => row.className = 'step-row');
-    document.querySelectorAll('.step-status').forEach(el => el.textContent = '');
+    document.querySelectorAll('#steps-section .step-row').forEach(row => row.className = 'step-row');
+    document.querySelectorAll('#steps-section .step-status').forEach(el => el.textContent = '');
     btnAutoRun.disabled = false;
     inputRunCount.disabled = false;
-    setAutoRunButton(t('btnAuto'));
+    setAutoRunButton(t('titleAutoRun'));
     autoContinueBar.style.display = 'none';
     updateStopButtonState(false);
     updateButtonStates();
     updateProgressCounter();
     resetRunMetrics();
+    syncSettingsGroups();
+    syncRunWindowMirrors();
   }
 });
 
 // Clear log
 btnClearLog.addEventListener('click', () => {
   logArea.innerHTML = '';
+  syncRunWindowLogFromMain();
 });
 
 // Save settings on change
 inputEmail.addEventListener('change', async () => {
   const email = inputEmail.value.trim();
+  syncSettingsGroups();
   if (email) {
     await chrome.runtime.sendMessage({ type: 'SAVE_EMAIL', source: 'sidepanel', payload: { email } });
   }
@@ -1221,6 +2641,7 @@ inputEmail.addEventListener('change', async () => {
 
 inputVpsUrl.addEventListener('change', async () => {
   const vpsUrl = inputVpsUrl.value.trim();
+  syncSettingsGroups();
   if (vpsUrl) {
     await chrome.runtime.sendMessage({ type: 'SAVE_SETTING', source: 'sidepanel', payload: { vpsUrl } });
   }
@@ -1248,6 +2669,7 @@ selectOauthProvider.addEventListener('change', async () => {
 });
 
 inputSub2apiBaseUrl.addEventListener('change', async () => {
+  syncSettingsGroups();
   await chrome.runtime.sendMessage({
     type: 'SAVE_SETTING',
     source: 'sidepanel',
@@ -1289,16 +2711,44 @@ selectMailProvider.addEventListener('change', async () => {
   });
 });
 
-selectLanguage.addEventListener('change', async () => {
-  applyLanguage(selectLanguage.value || 'zh-CN');
-  await chrome.runtime.sendMessage({
-    type: 'SAVE_SETTING',
-    source: 'sidepanel',
-    payload: { language: currentLanguage },
+if (btnLanguage) {
+  btnLanguage.addEventListener('click', async () => {
+    const nextLanguage = currentLanguage === 'zh-CN' ? 'en-US' : 'zh-CN';
+    applyLanguage(nextLanguage);
+    await chrome.runtime.sendMessage({
+      type: 'SAVE_SETTING',
+      source: 'sidepanel',
+      payload: { language: currentLanguage },
+    });
+  });
+}
+
+if (btnExpand) {
+  btnExpand.addEventListener('click', async () => {
+    const url = `${chrome.runtime.getURL('sidepanel/sidepanel.html')}?view=standalone`;
+    try {
+      await chrome.tabs.create({ url, active: true });
+    } catch (err) {
+      window.open(url, '_blank', 'noopener');
+      console.warn('Failed to open standalone view:', err);
+    }
+  });
+}
+
+[
+  inputEmail,
+  inputVpsUrl,
+  inputSub2apiBaseUrl,
+  inputMicrosoftManagerUrl,
+  inputMicrosoftManagerToken,
+].forEach((control) => {
+  control?.addEventListener('input', () => {
+    syncSettingsGroups();
   });
 });
 
 inputMicrosoftManagerUrl.addEventListener('change', async () => {
+  syncSettingsGroups();
   await chrome.runtime.sendMessage({
     type: 'SAVE_SETTING',
     source: 'sidepanel',
@@ -1307,6 +2757,7 @@ inputMicrosoftManagerUrl.addEventListener('change', async () => {
 });
 
 inputMicrosoftManagerToken.addEventListener('change', async () => {
+  syncSettingsGroups();
   await chrome.runtime.sendMessage({
     type: 'SAVE_SETTING',
     source: 'sidepanel',
@@ -1315,6 +2766,7 @@ inputMicrosoftManagerToken.addEventListener('change', async () => {
 });
 
 selectMicrosoftManagerMode.addEventListener('change', async () => {
+  syncSettingsGroups();
   await chrome.runtime.sendMessage({
     type: 'SAVE_SETTING',
     source: 'sidepanel',
@@ -1347,6 +2799,8 @@ chrome.runtime.onMessage.addListener((message) => {
     case 'LOG_ENTRY':
       appendLog(message.payload);
       if (message.payload.level === 'error') {
+        assistRecoveryMessage = String(message.payload.message || '');
+        renderAssistBanner();
         showToast(String(message.payload.message || ''), 'error');
       }
       break;
@@ -1366,6 +2820,7 @@ chrome.runtime.onMessage.addListener((message) => {
             displayLocalhostUrl.textContent = state.localhostUrl;
             displayLocalhostUrl.classList.add('has-value');
           }
+          syncSettingsGroups();
         });
       }
       break;
@@ -1381,17 +2836,20 @@ chrome.runtime.onMessage.addListener((message) => {
       displayStatus.textContent = t('statusReady');
       statusBar.className = 'status-bar';
       logArea.innerHTML = '';
-      document.querySelectorAll('.step-row').forEach(row => row.className = 'step-row');
-      document.querySelectorAll('.step-status').forEach(el => el.textContent = '');
+      document.querySelectorAll('#steps-section .step-row').forEach(row => row.className = 'step-row');
+      document.querySelectorAll('#steps-section .step-status').forEach(el => el.textContent = '');
       updateStopButtonState(false);
       updateProgressCounter();
       renderRunMetrics();
+      syncSettingsGroups();
+      syncRunWindowMirrors();
       break;
     }
 
     case 'DATA_UPDATED': {
       if (message.payload.email) {
         inputEmail.value = message.payload.email;
+        syncSettingsGroups();
       }
       if (message.payload.password !== undefined) {
         inputPassword.value = message.payload.password || '';
@@ -1399,16 +2857,19 @@ chrome.runtime.onMessage.addListener((message) => {
       if (message.payload.oauthUrl) {
         displayOauthUrl.textContent = message.payload.oauthUrl;
         displayOauthUrl.classList.add('has-value');
+        syncSettingsGroups();
       }
       if (message.payload.localhostUrl) {
         displayLocalhostUrl.textContent = message.payload.localhostUrl;
         displayLocalhostUrl.classList.add('has-value');
+        syncSettingsGroups();
       }
       if (message.payload.flowStartTime) {
         chrome.runtime.sendMessage({ type: 'GET_STATE', source: 'sidepanel' })
           .then(updateStatusDisplay)
           .catch(() => {});
       }
+      syncRunWindowMirrors();
       break;
     }
 
@@ -1434,6 +2895,8 @@ chrome.runtime.onMessage.addListener((message) => {
           inputRunCount.disabled = false;
           updateStopButtonState(false);
           finishActiveRunMetrics(false, Number(lastKnownState?.flowStartTime || 0));
+          assistRecoveryMessage = autoHint.textContent;
+          renderAssistBanner();
           break;
         case 'running':
           autoContinueBar.dataset.reason = '';
@@ -1446,15 +2909,17 @@ chrome.runtime.onMessage.addListener((message) => {
         case 'complete':
           btnAutoRun.disabled = false;
           inputRunCount.disabled = false;
-          setAutoRunButton(t('btnAuto'));
+          setAutoRunButton(t('titleAutoRun'));
           autoContinueBar.style.display = 'none';
           autoContinueBar.dataset.reason = '';
           updateStopButtonState(false);
+          assistRecoveryMessage = '';
+          renderAssistBanner();
           break;
         case 'stopped':
           btnAutoRun.disabled = false;
           inputRunCount.disabled = false;
-          setAutoRunButton(t('btnAuto'));
+          setAutoRunButton(t('titleAutoRun'));
           autoContinueBar.style.display = 'none';
           autoContinueBar.dataset.reason = '';
           updateStopButtonState(false);
@@ -1477,14 +2942,16 @@ const btnTheme = document.getElementById('btn-theme');
 
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('multipage-theme', theme);
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
 }
 
 function initTheme() {
-  const saved = localStorage.getItem('multipage-theme');
+  const saved = localStorage.getItem(THEME_STORAGE_KEY)
+    || localStorage.getItem(LEGACY_THEME_STORAGE_KEY)
+    || localStorage.getItem(LEGACY_THEME_STORAGE_KEY_2);
   if (saved) {
     setTheme(saved);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  } else {
     setTheme('dark');
   }
 }
@@ -1499,6 +2966,10 @@ btnTheme.addEventListener('click', () => {
 // ============================================================
 
 initTheme();
+initSettingsGroups();
+initFieldHoverCard();
+initRunWindow();
+initDocsWindow();
 applyLanguage(currentLanguage);
 renderVersionBadge();
 restoreState().then(() => {
