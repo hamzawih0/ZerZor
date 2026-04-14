@@ -23,7 +23,7 @@
 //   </div>
 // </div>
 
-console.log('[MultiPage:vps-panel] Content script loaded on', location.href);
+console.log('[extzarzoor:vps-panel] Content script loaded on', location.href);
 
 // Listen for commands from Background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
