@@ -1,9 +1,11 @@
 import NextAuth from "next-auth"
+import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { createDb, Db } from "./db"
 import { accounts, users, roles, userRoles } from "./schema"
 import { eq } from "drizzle-orm"
+import { getRequestContext } from "@cloudflare/next-on-pages"
 import { Permission, hasPermission, ROLES, Role } from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { hashPassword, comparePassword } from "@/lib/utils"
@@ -20,7 +22,7 @@ const ROLE_DESCRIPTIONS: Record<Role, string> = {
 }
 
 const getDefaultRole = async (): Promise<Role> => {
-  const defaultRole = process.env.DEFAULT_ROLE
+  const defaultRole = await getRequestContext().env.SITE_CONFIG.get("DEFAULT_ROLE")
 
   if (
     defaultRole === ROLES.DUKE ||
@@ -30,9 +32,7 @@ const getDefaultRole = async (): Promise<Role> => {
     return defaultRole as Role
   }
 
-  // Fallback to a usable role so first-time users can access mailbox features
-  // when DEFAULT_ROLE is not explicitly configured.
-  return ROLES.KNIGHT
+  return ROLES.CIVILIAN
 }
 
 async function findOrCreateRole(db: Db, roleName: Role) {
@@ -100,6 +100,11 @@ export const {
     accountsTable: accounts,
   }),
   providers: [
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
