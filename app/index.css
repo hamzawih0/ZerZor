@@ -1,0 +1,159 @@
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #020303;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(0, 255, 159, 0.08), transparent 20%),
+    radial-gradient(circle at 88% 10%, rgba(0, 255, 159, 0.04), transparent 18%),
+    linear-gradient(180deg, #000000 0%, #020303 100%);
+  background-attachment: fixed;
+}
+
+html[data-mode="light"] body {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(0, 112, 255, 0.16), transparent 28%),
+    radial-gradient(circle at 85% 15%, rgba(18, 184, 148, 0.14), transparent 24%),
+    radial-gradient(circle at 50% 95%, rgba(247, 156, 68, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(250, 248, 244, 1), rgba(241, 239, 234, 1));
+  }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 3px, 96px 96px;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 56%, rgba(0, 0, 0, 0.62) 100%),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.06), transparent 34%);
+  opacity: 0.95;
+}
+
+html[data-mode="light"] body::before {
+  opacity: 0.08;
+}
+
+html[data-mode="light"] body::after {
+  opacity: 0.35;
+}
+
+.home-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.ascii-waves-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 0;
+  color: rgba(0, 255, 159, 0.18);
+  text-shadow: 0 0 10px rgba(0, 255, 159, 0.08);
+  transform: translateZ(0);
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+}
+
+.home-shell > :not(.ascii-waves-background) {
+  position: relative;
+  z-index: 1;
+}
+
+html[data-mode="light"] .ascii-waves-background {
+  color: rgba(0, 96, 56, 0.12);
+  text-shadow: none;
+  mix-blend-mode: multiply;
+  opacity: 0.32;
+}
+
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.04);
+  }
+}
+
+@keyframes auth-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(18px, -12px, 0);
+  }
+}
+
+.auth-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(28px);
+  opacity: 0.72;
+  pointer-events: none;
+  animation: auth-float 14s ease-in-out infinite;
+}
+
+html[data-mode="light"] .auth-orb {
+  opacity: 0.52;
+}
+
+.auth-orb-slow {
+  animation: auth-drift 18s ease-in-out infinite;
+}
+
+/* TipTap list styles */
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.ProseMirror li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+

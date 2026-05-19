@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "ZorMail"
+  },
+  "actions": {
+    "ok": "확인",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제"
+  },
+  "nav": {
+    "home": "홈",
+    "login": "로그인",
+    "profile": "프로필",
+    "logout": "로그아웃",
+    "backToMailbox": "메일함으로 돌아가기"
+  }
+}

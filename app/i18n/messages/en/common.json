@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "ZorMail"
+  },
+  "actions": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Sign In",
+    "profile": "Profile",
+    "logout": "Log Out",
+    "backToMailbox": "Back to Mailbox"
+  }
+}

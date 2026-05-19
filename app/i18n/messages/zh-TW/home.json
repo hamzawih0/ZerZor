@@ -1,0 +1,30 @@
+{
+  "title": "ZorMail",
+  "subtitle": "萌萌噠臨時郵箱服務",
+  "features": {
+    "privacy": {
+      "title": "隱私保護",
+      "description": "保護您的真實郵箱地址"
+    },
+    "instant": {
+      "title": "郵箱分享",
+      "description": "將郵箱分享給其他人使用"
+    },
+    "expiry": {
+      "title": "自動過期",
+      "description": "到期自動失效"
+    },
+    "openapi": {
+      "title": "開放 API",
+      "description": "提供完整的 OpenAPI 介面"
+    }
+  },
+  "actions": {
+    "enterMailbox": "進入郵箱",
+    "getStarted": "開始使用"
+  }
+}
+
+
+
+

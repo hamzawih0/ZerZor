@@ -1,0 +1,30 @@
+{
+  "title": "ZorMail",
+  "subtitle": "萌萌哒临时邮箱服务",
+  "features": {
+    "privacy": {
+      "title": "隐私保护",
+      "description": "保护您的真实邮箱地址"
+    },
+    "instant": {
+      "title": "邮箱分享",
+      "description": "将邮箱分享给其他人使用"
+    },
+    "expiry": {
+      "title": "自动过期",
+      "description": "到期自动失效"
+    },
+    "openapi": {
+      "title": "开放 API",
+      "description": "提供完整的 OpenAPI 接口"
+    }
+  },
+  "actions": {
+    "enterMailbox": "进入邮箱",
+    "getStarted": "开始使用"
+  }
+}
+
+
+
+

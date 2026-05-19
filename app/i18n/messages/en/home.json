@@ -1,0 +1,26 @@
+{
+  "title": "ZorMail",
+  "subtitle": "Fast, private temp mail. Zero drama.",
+  "features": {
+    "privacy": {
+      "title": "Stay Private",
+      "description": "Keep your real inbox off sketchy signup forms"
+    },
+    "instant": {
+      "title": "Share in Seconds",
+      "description": "Drop a mailbox link and collaborate instantly"
+    },
+    "expiry": {
+      "title": "Auto-Clean",
+      "description": "Mailboxes expire on schedule so clutter never stacks"
+    },
+    "openapi": {
+      "title": "API Ready",
+      "description": "Full OpenAPI access for apps, bots, and workflows"
+    }
+  },
+  "actions": {
+    "enterMailbox": "Open Mailbox",
+    "getStarted": "Let’s Go"
+  }
+}

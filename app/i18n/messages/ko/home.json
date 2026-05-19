@@ -1,0 +1,29 @@
+{
+  "title": "ZorMail",
+  "subtitle": "귀여운 임시 이메일 서비스",
+  "features": {
+    "privacy": {
+      "title": "개인정보 보호",
+      "description": "실제 이메일 주소 보호"
+    },
+    "instant": {
+      "title": "이메일 공유",
+      "description": "다른 사람과 메일함 공유"
+    },
+    "expiry": {
+      "title": "자동 만료",
+      "description": "기한이 되면 자동으로 만료"
+    },
+    "openapi": {
+      "title": "Open API",
+      "description": "전체 OpenAPI 인터페이스 제공"
+    }
+  },
+  "actions": {
+    "enterMailbox": "메일함 입장",
+    "getStarted": "시작하기"
+  }
+}
+
+
+

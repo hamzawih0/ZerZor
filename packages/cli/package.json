@@ -1,0 +1,21 @@
+{
+  "name": "@ZorMail/cli",
+  "version": "0.1.2",
+  "description": "Agent-first CLI for ZorMail temporary email service",
+  "type": "module",
+  "bin": {
+    "ZorMail": "dist/index.js"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target=node",
+    "dev": "bun run ./src/index.ts"
+  },
+  "files": ["dist", "skill"],
+  "keywords": ["email", "temporary", "cli", "agent", "ai"],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0"
+  }
+}
+
+

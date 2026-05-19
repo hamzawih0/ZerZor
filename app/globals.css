@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 214 100% 97%;
+    --foreground: 220 35% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 35% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 35% 18%;
+    --primary: 213 94% 56%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 215 55% 94%;
+    --secondary-foreground: 220 35% 18%;
+    --muted: 215 55% 94%;
+    --muted-foreground: 220 20% 42%;
+    --accent: 210 92% 60%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 351 100% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214 40% 84%;
+    --input: 214 40% 84%;
+    --ring: 213 94% 56%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 230 25% 4%;
+    --foreground: 225 20% 88%;
+    --card: 228 24% 8%;
+    --card-foreground: 225 20% 88%;
+    --popover: 228 24% 8%;
+    --popover-foreground: 225 20% 88%;
+    --primary: 142 84% 52%;
+    --primary-foreground: 230 25% 4%;
+    --secondary: 230 23% 12%;
+    --secondary-foreground: 225 20% 88%;
+    --muted: 230 23% 12%;
+    --muted-foreground: 228 14% 55%;
+    --accent: 142 84% 44%;
+    --accent-foreground: 230 25% 4%;
+    --destructive: 351 100% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 228 26% 16%;
+    --input: 228 26% 16%;
+    --ring: 142 84% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-grid-primary {
+    background-image: linear-gradient(var(--primary) 1px, transparent 1px),
+      linear-gradient(90deg, var(--primary) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* 整体滚动条 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* 滚动条轨道 */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* 滚动条滑块 */
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
+  }
+
+  /* Firefox 滚动条 */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.2) transparent;
+  }
+
+  /* 深色模式下的滚动条 */
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 hover:bg-primary/50;
+  }
+
+  .dark * {
+    scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+  }
+
+  .ascii-main-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+    pointer-events: none;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1;
+    white-space: pre;
+    letter-spacing: 0.5px;
+    color: #3b82f6;
+    background-color: #050916;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.65);
+  }
+
+  .dark .ascii-main-background {
+    color: #22c55e;
+    background-color: #040908;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.65);
+  }
+}
+

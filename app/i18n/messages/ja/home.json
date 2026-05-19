@@ -1,0 +1,30 @@
+{
+  "title": "ZorMail",
+  "subtitle": "かわいい使い捨てメールサービス",
+  "features": {
+    "privacy": {
+      "title": "プライバシー保護",
+      "description": "本物のメールアドレスを保護します"
+    },
+    "instant": {
+      "title": "メールボックス共有",
+      "description": "メールボックスを他の人と共有できます"
+    },
+    "expiry": {
+      "title": "自動期限切れ",
+      "description": "有効期限が切れると自動的に無効になります"
+    },
+    "openapi": {
+      "title": "オープンAPI",
+      "description": "完全な OpenAPI インターフェースを提供"
+    }
+  },
+  "actions": {
+    "enterMailbox": "メールボックスに入る",
+    "getStarted": "今すぐ始める"
+  }
+}
+
+
+
+

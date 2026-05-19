@@ -1,0 +1,1 @@
+CREATE INDEX `email_address_lower_idx` ON `email` (LOWER("address"));

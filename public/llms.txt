@@ -1,0 +1,26 @@
+# ZorMail
+
+> Temporary email service with CLI tool for AI Agents
+
+ZorMail provides disposable email addresses. Install the CLI for programmatic access:
+
+## CLI Tool
+
+Install: npm i -g @ZorMail/cli
+
+Setup: ZorMail config set api-url https://ZorMail.app && ZorMail config set api-key YOUR_KEY
+
+Commands:
+- ZorMail create --domain <domain> --expiry <1h|24h|3d|permanent> --json
+- ZorMail list --json
+- ZorMail list --email-id <id> --json
+- ZorMail wait --email-id <id> --timeout <seconds> --json
+- ZorMail read --email-id <id> --message-id <id> --json
+- ZorMail send --email-id <id> --to <addr> --subject <subj> --content <body> --json
+- ZorMail delete --email-id <id> --json
+
+Typical workflow: create email → use address for signup → wait for verification → read content → extract code → delete
+
+All commands support --json for structured output. Exit code 0 = success, 1 = failure, 2 = auth error.
+
+
